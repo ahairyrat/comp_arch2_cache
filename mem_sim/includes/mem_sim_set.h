@@ -13,10 +13,10 @@ public:
 		);
 	virtual ~Set();
 
-	void storeFromCpu(char dataIn[], unsigned tag, unsigned byteOffset);
+	void storeFromCpu(char dataIn[], unsigned tag, unsigned byteOffset, int bytesToStore);
 	void storeFromMemory(char dataIn[], unsigned tag, void* blockRef);
-	void load(char dataOut[], unsigned tag, unsigned byteOffset);
-	void load(char dataOut[], void* blockRef);
+	void load(char dataOut[], unsigned tag, unsigned byteOffset, int bytesToLoad);
+	void load(char dataOut[], void* blockRef, int bytesToLoad);
 	void incrementUnused(Block* usedBlock);
 	
 private:

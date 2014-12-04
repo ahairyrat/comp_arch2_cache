@@ -24,3 +24,12 @@ Cache::~Cache() {
 	delete[] set;
 }
 
+void Cache::load()
+{
+
+}
+
+void Cache::store()
+{
+
+}

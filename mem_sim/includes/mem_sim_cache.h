@@ -17,6 +17,10 @@ public:
 		);
 	virtual ~Cache();
 
+	//add parameters
+	void load();
+	void store();
+
 private:
 	Set** set;
 	unsigned setsPerCache;

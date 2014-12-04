@@ -36,6 +36,12 @@
     <ClInclude Include="includes\mem_sim_exceptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="includes\mem_sim_debugger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\mem_sim_parser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\mem_sim.cpp">
@@ -57,6 +63,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\mem_sim_counter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mem_sim_debugger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mem_sim_parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

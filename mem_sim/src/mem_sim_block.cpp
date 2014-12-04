@@ -30,49 +30,46 @@ void Block::update(char dataIn[], unsigned tag)
 	counter.reset();
 }
 
-void Block::store(char dataIn[], unsigned byteOffset)
+void Block::store(char dataIn[], unsigned byteOffset, int &numberOfBytes)
 {
 	unsigned wordNumber = byteOffset / bytesPerWord;
 	unsigned offset = byteOffset % bytesPerWord;
 	unsigned storeLength = bytesPerWord - offset;
-	word[wordNumber]->store(offset, storeLength, dataIn);
-	this->used();
-	this->dirty = true;
-	//if only partial word has been stored
-	if (storeLength < bytesPerWord){
-		try{
-			word[wordNumber + 1]->store(0, bytesPerWord - storeLength, dataIn + offset);
-		}
-		catch (const std::out_of_range& e){
-			throw dataSplitException("data is split  over multiple blocks", offset);
-		}
-
+	char* dataInPtr = dataIn;
+	while (numberOfBytes > 0 && wordNumber < wordsPerBlock)
+	{
+		storeLength = calculateLoadLength(numberOfBytes, offset);
+		word[wordNumber]->store(offset, storeLength, dataInPtr);
+		offset = 0;
+		wordNumber++;
+		numberOfBytes -= storeLength;
+		dataInPtr += storeLength;
 	}
+	this->used();
+	//if only partial data has been stored
+	if (numberOfBytes > 0)
+		throw dataSplitException("data is split  over multiple blocks");
 }
 
-void Block::load(char dataOut[], unsigned byteOffset, int numberOfBytes)
+void Block::load(char dataOut[], unsigned byteOffset, int &numberOfBytes)
 {
 	unsigned wordNumber = byteOffset / bytesPerWord;
 	unsigned offset = byteOffset % bytesPerWord;
-	unsigned loadLength = bytesPerWord-offset;
-	while (numberOfBytes > 0)
+	unsigned loadLength = bytesPerWord - offset;
+	char* dataOutPtr = dataOut;
+	while (numberOfBytes > 0 && wordNumber < wordsPerBlock)
 	{
-		numberOfBytes -= loadLength;
-		word[wordNumber]->load(offset, loadLength, dataOut);
+		loadLength = calculateLoadLength(numberOfBytes, offset);
+		word[wordNumber]->load(offset, loadLength, dataOutPtr);
 		offset =  0;
 		wordNumber++;
-		loadLength 
+		numberOfBytes -= loadLength;
+		dataOutPtr += loadLength;
 	}
 	this->used();
-	//if only partial word has been loaded
-	if (loadLength < bytesPerWord){
-		try{
-			word[wordNumber + 1]->load(0, numberOfBytes - loadLength, dataOut + offset);
-		}
-		catch (const std::out_of_range& e){
-			throw dataSplitException("data is split  over multiple blocks", offset);
-		}
-	}
+	//if only partial data has been loaded
+	if (numberOfBytes > 0)
+		throw dataSplitException("data is split  over multiple blocks");
 }
 
 void Block::used()
@@ -106,7 +103,18 @@ void Block::setTag(unsigned tag)
 {
 	this -> tag = tag;
 }
+
 unsigned Block::getTag()
 {
 	return this->tag;
+}
+
+unsigned Block::calculateLoadLength(int numberOfBytes, unsigned offset)
+{
+	if (numberOfBytes + offset <= bytesPerWord)
+		return numberOfBytes;
+	else if (offset != 0)
+		return bytesPerWord - offset;
+	else
+		return bytesPerWord;
 }

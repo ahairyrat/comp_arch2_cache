@@ -15,8 +15,8 @@ public:
 
 	void update(char dataIn[], unsigned tag);
 
-	void store(char dataIn[], unsigned byteOffset);
-	void load(char dataOut[], unsigned byteOffset);
+	void store(char dataIn[], unsigned byteOffset, int &numberOfBytes);
+	void load(char dataOut[], unsigned byteOffset, int &numberOfBytes);
 
 	void Block::used();
 	void Block::notUsed();
@@ -36,6 +36,8 @@ private:
 	bool dirty;
 	unsigned bytesPerWord;
 	unsigned wordsPerBlock;
+
+	unsigned calculateLoadLength(int numberOfBytes, unsigned offset);
 
 	Counter counter;
 	

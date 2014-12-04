@@ -1,6 +1,8 @@
 
 #include "mem_sim_cache.h"
 #include "mem_sim_memory.h"
+#include "mem_sim_parser.h"
+#include "mem_sim_debugger.h"
 
 
 int main(int argc, char *argv[]){
@@ -14,20 +16,20 @@ int main(int argc, char *argv[]){
 	unsigned memWriteTime = *(unsigned*)argv[7];
 
 	Cache cache(
-		unsigned addressBits,
-		unsigned bytesPerWord,
-		unsigned wordsPerBlock,
-		unsigned blocksPerSet,
-		unsigned setsPerCache,
-		unsigned hitTime
+		addressBits,
+		bytesPerWord,
+		wordsPerBlock,
+		blocksPerSet,
+		setsPerCache,
+		hitTime
 	);
 
 	Memory memory(
-		unsigned addressBits,
-		unsigned bytesPerWord,
-		unsigned wordsPerBlock,
-		unsigned memReadTime,
-		unsigned memWriteTime
+		addressBits,
+		bytesPerWord,
+		wordsPerBlock,
+		memReadTime,
+		memWriteTime
 		);
 
 }

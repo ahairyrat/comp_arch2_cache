@@ -21,12 +21,12 @@ Set::~Set() {
 	delete[] block;
 }
 //Normal version
-void Set::storeFromCpu(char dataIn[], unsigned tag, unsigned byteOffset)
+void Set::storeFromCpu(char dataIn[], unsigned tag, unsigned byteOffset, int bytesToStore)
 {
 	Block* storeBlock = findBlock(tag);
 	if (storeBlock == NULL)
 		throw dataNotAvailableException("Unable to store, data not in cache");
-	storeBlock->store(dataIn, byteOffset);
+	storeBlock->store(dataIn, byteOffset, bytesToStore);
 }
 
 //version for access to memory
@@ -46,18 +46,18 @@ void Set::storeFromMemory(char dataIn[], unsigned tag, void* blockRef)
 	storeBlock->update(dataIn, tag);
 }
 
-void Set::load(char dataOut[], unsigned tag, unsigned byteOffset)
+void Set::load(char dataOut[], unsigned tag, unsigned byteOffset, int bytesToLoad)
 {
 	Block* loadBlock = findBlock(tag);
 	if (loadBlock == NULL)
 		throw dataNotAvailableException("Unable to load, data not in cache");
-	loadBlock->load(dataOut, byteOffset);
+	loadBlock->load(dataOut, byteOffset, bytesToLoad);
 }
 
-void Set::load(char dataOut[], void* blockRef)
+void Set::load(char dataOut[], void* blockRef, int bytesToLoad)
 {
 	Block* loadBlock = (Block*)blockRef;
-	loadBlock->load(dataOut, 0);
+	loadBlock->load(dataOut, 0, bytesToLoad);
 }
 
 Block* Set::findBlock(unsigned tag)

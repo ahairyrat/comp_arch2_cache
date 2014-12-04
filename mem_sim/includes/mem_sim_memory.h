@@ -30,6 +30,7 @@ private:
 	unsigned wordsPerBlock;
 	unsigned memReadTime;
 	unsigned memWriteTime;
+	int bytesPerBlock;
 };
 
 #endif /* MEM_SIM_MEMORY_H_ */

@@ -9,9 +9,10 @@ Block::Block(
 	unsigned wordsPerBlock
 	) : bytesPerWord(bytesPerWord), wordsPerBlock(wordsPerBlock)
 {
-	word = new Word*[wordsPerBlock];
+	word = new Word*[wordsPerBlock+1];
 	for (unsigned i = 0; i < wordsPerBlock; i++)
 		word[i] = new Word(bytesPerWord);
+	word[wordsPerBlock] = '\0';
 	valid = false;
 	dirty = false;
 }
@@ -28,6 +29,8 @@ void Block::update(char dataIn[], unsigned tag)
 	for (unsigned i = 0; i < wordsPerBlock; i++)
 		word[i]->store(0, bytesPerWord, dataIn+(i*bytesPerWord));
 	counter.reset();
+	this->dirty = false;
+	this->valid = true;
 }
 
 void Block::store(char dataIn[], unsigned byteOffset, int &numberOfBytes)
@@ -46,9 +49,10 @@ void Block::store(char dataIn[], unsigned byteOffset, int &numberOfBytes)
 		dataInPtr += storeLength;
 	}
 	this->used();
+	this->dirty = true;
 	//if only partial data has been stored
 	if (numberOfBytes > 0)
-		throw dataSplitException("data is split  over multiple blocks");
+		throw dataSplitException("data is split over multiple blocks");
 }
 
 void Block::load(char dataOut[], unsigned byteOffset, int &numberOfBytes)
@@ -56,7 +60,7 @@ void Block::load(char dataOut[], unsigned byteOffset, int &numberOfBytes)
 	unsigned wordNumber = byteOffset / bytesPerWord;
 	unsigned offset = byteOffset % bytesPerWord;
 	unsigned loadLength = bytesPerWord - offset;
-	char* dataOutPtr = dataOut;
+	char* dataOutPtr = &dataOut[0];
 	while (numberOfBytes > 0 && wordNumber < wordsPerBlock)
 	{
 		loadLength = calculateLoadLength(numberOfBytes, offset);
@@ -69,7 +73,7 @@ void Block::load(char dataOut[], unsigned byteOffset, int &numberOfBytes)
 	this->used();
 	//if only partial data has been loaded
 	if (numberOfBytes > 0)
-		throw dataSplitException("data is split  over multiple blocks");
+		throw dataSplitException("data is split over multiple blocks");
 }
 
 void Block::used()
@@ -117,4 +121,14 @@ unsigned Block::calculateLoadLength(int numberOfBytes, unsigned offset)
 		return bytesPerWord - offset;
 	else
 		return bytesPerWord;
+}
+
+void Block::setValid(bool valid)
+{
+	this->valid = valid;
+}
+
+void Block::setDirty(bool dirty)
+{
+	this->dirty = dirty;
 }

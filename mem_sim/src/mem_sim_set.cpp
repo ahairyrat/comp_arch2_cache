@@ -8,18 +8,21 @@ Set::Set(
 	unsigned blocksPerSet
 	) : blocksPerSet(blocksPerSet)
 {
-	block = new Block*[blocksPerSet];
+	block = new Block*[blocksPerSet+1];
 	for (unsigned i = 0; i < blocksPerSet; i++)
 		block[i] = new Block(
 		bytesPerWord,
 		wordsPerBlock
 		);
+	block[blocksPerSet] = '\0';
 }
+
 Set::~Set() {
 	for (unsigned i = 0; i < blocksPerSet; i++)
 		delete block[i];
 	delete[] block;
 }
+
 //Normal version
 void Set::storeFromCpu(char dataIn[], unsigned tag, unsigned byteOffset, int bytesToStore)
 {
@@ -27,6 +30,7 @@ void Set::storeFromCpu(char dataIn[], unsigned tag, unsigned byteOffset, int byt
 	if (storeBlock == NULL)
 		throw dataNotAvailableException("Unable to store, data not in cache");
 	storeBlock->store(dataIn, byteOffset, bytesToStore);
+	incrementUnused(storeBlock);
 }
 
 //version for access to memory
@@ -35,29 +39,37 @@ void Set::storeFromMemory(char dataIn[], unsigned tag, void* blockRef)
 	Block* storeBlock;
 	if (blockRef == NULL)
 	{
-		storeBlock = findLRU();
-		if (storeBlock == NULL)
-			storeBlock = findEmpty();
+		storeBlock = findBlock(tag);
+		if(storeBlock == NULL)
+		{
+			storeBlock = findLRU();
+			if (storeBlock == NULL)
+				storeBlock = findEmpty();
+		}
 	}
 	else
 		storeBlock = (Block*)blockRef;
-	if (storeBlock->isDirty())
+	if (storeBlock->isDirty() && storeBlock->isValid())
 		throw dataIsDirtyException("Unable to store, data must be updated", storeBlock);
 	storeBlock->update(dataIn, tag);
 }
 
-void Set::load(char dataOut[], unsigned tag, unsigned byteOffset, int bytesToLoad)
+//Normal version
+void Set::loadToCpu(char dataOut[], unsigned tag, unsigned byteOffset, int bytesToLoad)
 {
 	Block* loadBlock = findBlock(tag);
 	if (loadBlock == NULL)
 		throw dataNotAvailableException("Unable to load, data not in cache");
 	loadBlock->load(dataOut, byteOffset, bytesToLoad);
+	incrementUnused(loadBlock);
 }
 
-void Set::load(char dataOut[], void* blockRef, int bytesToLoad)
+//version for access to memory
+void Set::loadToMemory(char dataOut[], void* blockRef, int bytesToLoad)
 {
 	Block* loadBlock = (Block*)blockRef;
 	loadBlock->load(dataOut, 0, bytesToLoad);
+	loadBlock->setDirty(false);
 }
 
 Block* Set::findBlock(unsigned tag)

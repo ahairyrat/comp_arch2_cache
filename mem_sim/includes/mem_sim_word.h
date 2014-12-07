@@ -3,6 +3,7 @@
 #define MEM_SIM_WORD_H_
 
 class Word {
+	friend class Debugger;
 public:
 	Word(unsigned bytesPerWord);
 	virtual ~Word();

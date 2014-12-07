@@ -31,8 +31,8 @@ std::vector<std::string> Parser::parse(std::string inputString)
 std::vector<std::string> Parser::tokenize(std::string inputString)
 {
 	std::vector<std::string> result;
-	int begin = 0;
-	int end = 0;
+	unsigned begin = 0;
+	unsigned end = 0;
 	while (begin < inputString.length() && end < inputString.length())
 	{
 		end = inputString.find(" ");

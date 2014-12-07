@@ -4,8 +4,8 @@
 
 #include "mem_sim_block.h"
 
-class Memory
-{
+class Memory{
+	friend class Debugger;
 public:
 	Memory(
 		unsigned addressBits,

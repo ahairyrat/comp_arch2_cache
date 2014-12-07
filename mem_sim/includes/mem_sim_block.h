@@ -6,6 +6,7 @@
 #include "mem_sim_counter.h"
 
 class Block {
+	friend class Debugger;
 public:
 	Block(
 		unsigned bytesPerWord,
@@ -28,6 +29,9 @@ public:
 
 	void setTag(unsigned tag);
 	unsigned getTag();
+
+	void setValid(bool valid);
+	void setDirty(bool dirty);
 
 private:
 	Word** word;

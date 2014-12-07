@@ -5,6 +5,7 @@
 #include "mem_sim_block.h"
 
 class Set {
+	friend class Debugger;
 public:
 	Set(
 		unsigned bytesPerWord,
@@ -15,8 +16,8 @@ public:
 
 	void storeFromCpu(char dataIn[], unsigned tag, unsigned byteOffset, int bytesToStore);
 	void storeFromMemory(char dataIn[], unsigned tag, void* blockRef);
-	void load(char dataOut[], unsigned tag, unsigned byteOffset, int bytesToLoad);
-	void load(char dataOut[], void* blockRef, int bytesToLoad);
+	void loadToCpu(char dataOut[], unsigned tag, unsigned byteOffset, int bytesToLoad);
+	void loadToMemory(char dataOut[], void* blockRef, int bytesToLoad);
 	void incrementUnused(Block* usedBlock);
 	
 private:

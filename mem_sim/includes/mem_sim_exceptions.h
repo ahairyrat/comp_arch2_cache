@@ -24,7 +24,7 @@ public:
 	dataIsDirtyException(const char* msg, void* dirtylocation) : err_msg(msg), location(dirtylocation){}
 	~dataIsDirtyException() {}
 	const char *what() { return this->err_msg.c_str(); }
-	const void* dirtyLocation(){ return location; }
+	void* dirtyLocation(){ return location; }
 };
 
 class dataSplitException : public std::exception {

@@ -20,9 +20,9 @@ int main(int argc, char *argv[]){
 	if (argc < 8)
 	{
 		addressBits = 5;
-		bytesPerWord = 4;
+		bytesPerWord = 8;
 		wordsPerBlock = 4;
-		blocksPerSet = 1;
+		blocksPerSet = 2;
 		setsPerCache = 10;
 		hitTime = 0;
 		memReadTime = 0;
@@ -61,32 +61,16 @@ int main(int argc, char *argv[]){
 
 	Debugger debugger;
 	std::stringstream dataTest;
-	int bytesPerBlock = bytesPerWord*wordsPerBlock;
-	int bytesToRead = 12;
-	char  dataIn[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B','C', 'D', 'E', 'F', 'G'};
-	char *dataOut= new char[bytesToRead+1];
-	debugger.forceCache(&cache);
-	cache.store(dataIn, 485, 0);
+	char* dataOut = new char[16];
+	char dataIn[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 8, 7, 6, 5, 4, 3, 2 };
+	//debugger.forceCache(&cache);
+	cache.store(dataIn, 5);
 	debugger.printCache(dataTest, &cache);
 	std::cout << dataTest.str() << std::endl;
-	char dataIn2[] = { '0', '1', '2', '3', '4', '5', '6', 'T', '8', '9', 'G', 'F', 'X', 'R', 'E', 'F', 'G' };
-	
-	cache.store(dataIn2, 487, 0);
-	dataTest.str("");
-	debugger.printCache(dataTest, &cache);
-	std::cout << dataTest.str() << std::endl;
-	try{
-		cache.load(dataOut, 485, 0);
-		for (int i = 0; i < bytesToRead; i++)
-			std::cout << dataOut[i];
-		std::cout << std::endl;
-	}
-	catch (dataNotAvailableException e)
-	{
-		std::cout << e.what() << std::endl;
-	}
-
+	cache.load(dataOut, 10);
+	for (int i = 0; i < 16; i++)
+		std::cout << dataOut[i];
+	std::cout << std::endl;
 	getchar();
 	delete[] dataOut;
-	return 0;
 }

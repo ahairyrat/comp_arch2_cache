@@ -18,8 +18,8 @@ public:
 		);
 	virtual ~Cache();
 
-	void store(char dataIn[], unsigned address, unsigned byteoffset);
-	void load(char dataOut[], unsigned address, unsigned byteoffset);
+	void store(char dataIn[], unsigned byteAddress);
+	void load(char dataOut[], unsigned byteAddress);
 
 
 private:
@@ -30,8 +30,8 @@ private:
 	unsigned blocksPerSet;
 	Memory* memory;
 
-	void storeFromMemory(unsigned address);
-	void loadToMemory(unsigned address, void* block);
+	void storeFromMemory(unsigned byteAddress);
+	void loadToMemory(unsigned byteAddress, void* block);
 };
 
 #endif /* MEM_SIM_CACHE_H_ */

@@ -26,13 +26,13 @@ bool Debugger::debug(Cache* cache, Memory* memory)
 
 void Debugger::forceWord(Word* word)
 {
-	unsigned count = 65;
+	unsigned count = 0;
 	for (unsigned i = 0; i < word->bytesPerWord; i++)
 	{
 		word->byte[i] = count;
 		count++;
-		if (count > 90)
-			count = 65;
+		if (count > 9)
+			count = 0;
 	}
 }
 
@@ -42,20 +42,20 @@ void Debugger::forceWord(Word* word, unsigned &count)
 	{
 		word->byte[i] = count;
 		count++;
-		if (count > 90)
-			count = 65;
+		if (count > 9)
+			count = 0;
 	}
 }
 
 void Debugger::printWord(std::stringstream& dataOut, Word* word)
 {
 	for (unsigned i = 0; i < word->bytesPerWord; i++)
-		dataOut << word->byte[i];
+		dataOut << (unsigned)word->byte[i];
 }
 
 void Debugger::forceBlock(Block* block)
 {
-	unsigned count = 65;
+	unsigned count = 0;
 	block->valid = true;
 	for (unsigned i = 0; i < block->wordsPerBlock; i++)
 		forceWord(block->word[i], count);
@@ -79,7 +79,7 @@ void Debugger::printBlock(std::stringstream& dataOut, Block* block)
 
 void Debugger::forceSet(Set* set)
 {
-	unsigned count = 65;
+	unsigned count = 0;
 	for (unsigned i = 0; i < set->blocksPerSet; i++)
 		forceBlock(set->block[i], count);
 }
@@ -101,7 +101,7 @@ void Debugger::printSet(std::stringstream& dataOut, Set* set)
 
 void Debugger::forceCache(Cache* cache)
 {
-	unsigned count = 65;
+	unsigned count = 0;
 	for (unsigned i = 0; i < cache ->setsPerCache; i++)
 		forceSet(cache->set[i], count);
 }
@@ -122,6 +122,15 @@ void Debugger::printCache(std::stringstream& dataOut, Cache* cache)
 
 void Debugger::printMemory(std::stringstream& dataOut, Memory* memory)
 {
-
+	for (unsigned i = 0; i < memory->memorySize; i++)
+	{
+		for (unsigned j = 0; j < memory->bytesPerBlock; j++)
+		{
+			if (j%memory->bytesPerWord == 0)
+				dataOut << '|';
+			dataOut << (unsigned)memory->data[i][j];	
+		}
+		dataOut << '\n';
+	}
 }
 

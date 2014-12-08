@@ -32,7 +32,7 @@ void Memory::read(char dataOut[], unsigned address, unsigned loadLength)
 {
 	unsigned blockNumber = address / bytesPerBlock;
 	unsigned offset = address - (blockNumber*bytesPerBlock);
-	int blocksToLoad = ((offset + loadLength) / bytesPerBlock) + ((offset+loadLength)% bytesPerBlock != 0)
+	int blocksToLoad = ((offset + loadLength) / bytesPerBlock) + ((offset + loadLength) % bytesPerBlock != 0);
 	while (blocksToLoad > 0)
 	{
 		readWord(dataOut, blockNumber);
@@ -43,19 +43,28 @@ void Memory::read(char dataOut[], unsigned address, unsigned loadLength)
 
 }
 
-void Memory::write(char dataIn[], unsigned address, unsigned loadLength)
+void Memory::write(char dataIn[], unsigned address, unsigned storeLength)
 {
-
+	unsigned blockNumber = address / bytesPerBlock;
+	unsigned offset = address - (blockNumber*bytesPerBlock);
+	int blocksToLoad = ((offset + storeLength) / bytesPerBlock) + ((offset + storeLength) % bytesPerBlock != 0);
+	while (blocksToLoad > 0)
+	{
+		writeWord(dataIn, blockNumber);
+		blocksToLoad--;
+		dataIn += bytesPerBlock;
+		blockNumber++;
+	}
 }
 
 void Memory::readWord(char dataOut[], unsigned blockNumber)
 {
-	for (int i = 0; i < bytesPerBlock; i++)
+	for (unsigned i = 0; i < bytesPerBlock; i++)
 		dataOut[i] = data[blockNumber][i];
 }
 
 void Memory::writeWord(char dataIn[], unsigned blockNumber)
 {
-	for (int i = 0; i < bytesPerBlock; i++)
+	for (unsigned i = 0; i < bytesPerBlock; i++)
 		data[blockNumber][i] = dataIn[i];
 }

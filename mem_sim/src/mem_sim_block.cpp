@@ -86,8 +86,6 @@ void Block::notUsed()
 	counter.increment();
 }
 
-
-
 bool Block::isValid()
 {
 	return valid;

@@ -10,38 +10,52 @@ Memory::Memory(
 	) : bytesPerWord(bytesPerWord), wordsPerBlock(wordsPerBlock), memReadTime(memReadTime), memWriteTime(memWriteTime)
 {
 	blockLength = wordsPerBlock*bytesPerWord;
-	memorySize = (2 << addressBits) / blockLength;
+	memorySize = (2 << (addressBits-1)) / blockLength;
 	bytesPerBlock = bytesPerWord*wordsPerBlock;
-	char* initial = new char[bytesPerBlock];
-	for (int i = 0; i < bytesPerBlock; i++)
-		initial[i] = 0;
-	data = new Block*[memorySize];
+	data = new char*[memorySize];
 	for (unsigned i = 0; i < memorySize; i++)
 	{
-		data[i] = new Block(bytesPerWord, wordsPerBlock);
-		data[i]->store(initial, 0, bytesPerBlock);
-		data[i]->setValid(true);
-		data[i]->setDirty(false);
+		data[i] = new char[blockLength];
+		for (unsigned j = 0; j < blockLength; j++)
+			data[i][j] = 0;
 	}
-	delete[] initial;
 }
 
 Memory::~Memory()
 {
 	for (unsigned i = 0; i < memorySize; i++)
-		delete data[i];
+		delete[] data[i];
 	delete[] data;
 }
 
-void Memory::read(char dataOut[], unsigned address)
+void Memory::read(char dataOut[], unsigned address, unsigned loadLength)
 {
-	unsigned blockNumber = address / blockLength;
-	unsigned byteOffset = address % blockLength;
-	int bytesPerBlockCopy = bytesPerBlock;
-	data[blockNumber]->load(dataOut, 0, bytesPerBlockCopy);
+	unsigned blockNumber = address / bytesPerBlock;
+	unsigned offset = address - (blockNumber*bytesPerBlock);
+	int blocksToLoad = ((offset + loadLength) / bytesPerBlock) + ((offset+loadLength)% bytesPerBlock != 0)
+	while (blocksToLoad > 0)
+	{
+		readWord(dataOut, blockNumber);
+		blocksToLoad--;
+		dataOut += bytesPerBlock;
+		blockNumber++;
+	}
+
 }
 
-void Memory::write(char dataIn[], unsigned address)
+void Memory::write(char dataIn[], unsigned address, unsigned loadLength)
 {
 
+}
+
+void Memory::readWord(char dataOut[], unsigned blockNumber)
+{
+	for (int i = 0; i < bytesPerBlock; i++)
+		dataOut[i] = data[blockNumber][i];
+}
+
+void Memory::writeWord(char dataIn[], unsigned blockNumber)
+{
+	for (int i = 0; i < bytesPerBlock; i++)
+		data[blockNumber][i] = dataIn[i];
 }

@@ -2,8 +2,6 @@
 #ifndef MEM_SIM_MEMORY_H_
 #define MEM_SIM_MEMORY_H_
 
-#include "mem_sim_block.h"
-
 class Memory{
 	friend class Debugger;
 public:
@@ -16,14 +14,13 @@ public:
 	);
 	virtual ~Memory();
 
-	//dataIn & datOut must be at least the size of bytesPerWord if address is aligned
-	//dataIn & datOut must be at least the size of 2*bytesPerWord if address is unaligned
-	//If address is unaligned all blocks in which data is contained will be loaded
-	void read(char dataOut[], unsigned address);
-	void write(char dataIn[], unsigned address);
+	//dataIn & datOut must be at least the size of bytesPerBlock
+	//dataIn & datOut must be at least the size of 2*bytesPerBlock if multiple blocks are to be read/written
+	void read(char dataOut[], unsigned address, unsigned loadLength);
+	void write(char dataIn[], unsigned address, unsigned loadLength);
 
 private:
-	Block** data;
+	char** data;
 	unsigned blockLength;
 	unsigned memorySize;
 	unsigned bytesPerWord;
@@ -31,6 +28,9 @@ private:
 	unsigned memReadTime;
 	unsigned memWriteTime;
 	int bytesPerBlock;
+
+	void readWord(char dataOut[], unsigned blockNumber);
+	void writeWord(char dataIn[], unsigned blockNumber);
 };
 
 #endif /* MEM_SIM_MEMORY_H_ */

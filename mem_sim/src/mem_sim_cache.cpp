@@ -2,7 +2,6 @@
 #include <iostream>
 #include "mem_sim_cache.h"
 #include "mem_sim_exceptions.h"
-#include "mem_sim_block.h"
 
 Cache::Cache(
 	unsigned bytesPerWord,
@@ -88,8 +87,7 @@ void Cache::storeFromMemory(unsigned byteAddress)
 	catch (dataIsDirtyException e)
 	{
 		std::cout << e.what() << std::endl;
-		Block* dirtyBlock = (Block*)e.dirtyLocation();
-		unsigned storeAddress = dirtyBlock->getTag()*wordsPerBlock*bytesPerWord;
+		unsigned storeAddress = e.getTag()*wordsPerBlock*bytesPerWord;
 		loadToMemory(storeAddress, e.dirtyLocation());
 		set[setIndex]->storeFromMemory(data, tag, e.dirtyLocation());
 	}

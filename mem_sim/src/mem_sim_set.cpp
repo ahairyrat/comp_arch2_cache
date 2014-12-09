@@ -50,7 +50,7 @@ void Set::storeFromMemory(char dataIn[], unsigned tag, void* blockRef)
 	else
 		storeBlock = (Block*)blockRef;
 	if (storeBlock->isDirty() && storeBlock->isValid())
-		throw dataIsDirtyException("Unable to store, data must be updated", storeBlock);
+		throw dataIsDirtyException("Unable to store, data must be updated", storeBlock, storeBlock ->getTag());
 	storeBlock->update(dataIn, tag);
 }
 

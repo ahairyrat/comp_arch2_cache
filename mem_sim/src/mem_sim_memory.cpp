@@ -1,6 +1,4 @@
 #include "mem_sim_memory.h"
-#include <iostream>
-
 
 Memory::Memory(
 	unsigned addressBits,
@@ -33,7 +31,8 @@ void Memory::read(char dataOut[], unsigned address, unsigned loadLength)
 {
 	unsigned blockNumber = address / bytesPerBlock;
 	unsigned offset = address - (blockNumber*bytesPerBlock);
-	int blocksToLoad = ((offset + loadLength) / bytesPerBlock) + ((offset + loadLength) % bytesPerBlock != 0);
+	int blocksToLoad = ((offset + loadLength) / bytesPerBlock)
+		+ ((offset + loadLength) % bytesPerBlock != 0);
 	while (blocksToLoad > 0)
 	{
 		readWord(dataOut, blockNumber);
@@ -48,7 +47,8 @@ void Memory::write(char dataIn[], unsigned address, unsigned storeLength)
 {
 	unsigned blockNumber = address / bytesPerBlock;
 	unsigned offset = address - (blockNumber*bytesPerBlock);
-	int blocksToLoad = ((offset + storeLength) / bytesPerBlock) + ((offset + storeLength) % bytesPerBlock != 0);
+	int blocksToLoad = ((offset + storeLength) / bytesPerBlock)
+		+ ((offset + storeLength) % bytesPerBlock != 0);
 	while (blocksToLoad > 0)
 	{
 		writeWord(dataIn, blockNumber);

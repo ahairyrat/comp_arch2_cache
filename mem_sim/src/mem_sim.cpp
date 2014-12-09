@@ -64,7 +64,7 @@ int main(int argc, char *argv[]){
 	char* dataOut = new char[16];
 	char dataIn[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 8, 7, 6, 5, 4, 3, 2 };
 	//debugger.forceCache(&cache);
-	cache.store(dataIn, 5);
+	cache.store(dataIn, 5, bytesPerWord);
 	debugger.printCache(dataTest, &cache);
 	std::cout << dataTest.str() << std::endl;
 	cache.load(dataOut, 10);

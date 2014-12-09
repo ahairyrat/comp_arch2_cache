@@ -44,20 +44,29 @@ void Cache::store(char dataIn[], unsigned byteAddress, unsigned numBytes)
 	catch (dataSplitException e)
 	{
 		std::cout << e.what() << std::endl;
-		unsigned remByteAddress = byteAddress + e.dataRead();
-		store(dataIn + e.dataRead(), remByteAddress, numBytes - e.dataRead())
+		store(dataIn + e.dataUsed(), byteAddress + e.dataUsed(), numBytes - e.dataUsed());
 	}
 }
 
 void Cache::load(char dataOut[], unsigned byteAddress, unsigned numBytes)
 {
-	//Fix this
-	/*
-	unsigned setIndex = (byteAddress/(blocksPerSet*wordsPerBlock*bytesPerWord))%setsPerCache;
+	unsigned setIndex = (byteAddress / (blocksPerSet*wordsPerBlock*bytesPerWord)) % setsPerCache;
 	unsigned tag = byteAddress;
-	unsigned offset = byteAddress%(wordsPerBlock*bytesPerWord);
-	set[setIndex]->loadToCpu(dataOut, tag, offset, bytesPerWord);
-	*/
+	unsigned offset = byteAddress % (wordsPerBlock*bytesPerWord);
+	try{
+		set[setIndex]->loadToCpu(dataOut, tag, offset, numBytes);
+	}
+	catch (dataNotAvailableException e)
+	{
+		std::cout << e.what() << std::endl;
+		storeFromMemory(byteAddress);
+		load(dataOut, byteAddress, numBytes);
+	}
+	catch (dataSplitException e)
+	{
+		std::cout << e.what() << std::endl;
+		load(dataOut + e.dataUsed(), byteAddress + e.dataUsed(), numBytes - e.dataUsed());
+	}
 }
 
 void Cache::storeFromMemory(unsigned byteAddress)

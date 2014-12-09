@@ -29,8 +29,8 @@ Cache::~Cache() {
 
 void Cache::store(char dataIn[], unsigned byteAddress, unsigned numBytes)
 {
-	unsigned setIndex = (byteAddress/(blocksPerSet*wordsPerBlock*bytesPerWord))%setsPerCache;
-	unsigned tag = byteAddress;
+	unsigned setIndex = (byteAddress/(wordsPerBlock*bytesPerWord))%setsPerCache;
+	unsigned tag = byteAddress / (wordsPerBlock*bytesPerWord);
 	unsigned offset = byteAddress%(wordsPerBlock*bytesPerWord);
 	try{
 		set[setIndex]->storeFromCpu(dataIn, tag, offset, numBytes);
@@ -50,8 +50,8 @@ void Cache::store(char dataIn[], unsigned byteAddress, unsigned numBytes)
 
 void Cache::load(char dataOut[], unsigned byteAddress, unsigned numBytes)
 {
-	unsigned setIndex = (byteAddress / (blocksPerSet*wordsPerBlock*bytesPerWord)) % setsPerCache;
-	unsigned tag = byteAddress;
+	unsigned setIndex = (byteAddress / (wordsPerBlock*bytesPerWord)) % setsPerCache;
+	unsigned tag = byteAddress / (wordsPerBlock*bytesPerWord);
 	unsigned offset = byteAddress % (wordsPerBlock*bytesPerWord);
 	try{
 		set[setIndex]->loadToCpu(dataOut, tag, offset, numBytes);
@@ -71,8 +71,8 @@ void Cache::load(char dataOut[], unsigned byteAddress, unsigned numBytes)
 
 void Cache::storeFromMemory(unsigned byteAddress)
 {
-	unsigned setIndex = (byteAddress / (blocksPerSet*wordsPerBlock*bytesPerWord)) % setsPerCache;
-	unsigned tag = byteAddress;
+	unsigned setIndex = (byteAddress / (wordsPerBlock*bytesPerWord)) % setsPerCache;
+	unsigned tag = byteAddress / (wordsPerBlock*bytesPerWord);
 	unsigned offset = byteAddress % (wordsPerBlock*bytesPerWord);
 	char* data = new char[bytesPerWord*wordsPerBlock];
 	memory->read(data, byteAddress - offset, (bytesPerWord*wordsPerBlock));
@@ -90,8 +90,8 @@ void Cache::storeFromMemory(unsigned byteAddress)
 
 void Cache::loadToMemory(unsigned byteAddress, void* block)
 {
-	unsigned setIndex = (byteAddress / (blocksPerSet*wordsPerBlock*bytesPerWord)) % setsPerCache;
-	unsigned tag = byteAddress;
+	unsigned setIndex = (byteAddress / (wordsPerBlock*bytesPerWord)) % setsPerCache;
+	unsigned tag = byteAddress / (wordsPerBlock*bytesPerWord);
 	unsigned offset = byteAddress % (wordsPerBlock*bytesPerWord);
 	char* data = new char[bytesPerWord*wordsPerBlock];
 	set[setIndex]->loadToMemory(data, block, bytesPerWord*wordsPerBlock);

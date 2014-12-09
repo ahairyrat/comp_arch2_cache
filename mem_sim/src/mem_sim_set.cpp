@@ -107,3 +107,10 @@ void Set::incrementUnused(Block* usedBlock)
 		if (block[i] != usedBlock)
 			block[i]->notUsed();
 }
+
+void Set::flush()
+{
+	for (unsigned i = 0; i < blocksPerSet; i++)
+		if (block[i] ->isValid() && block[i]->isDirty())
+			throw dataIsDirtyException("Flushing Data", block[i], block[i]->getTag());
+}

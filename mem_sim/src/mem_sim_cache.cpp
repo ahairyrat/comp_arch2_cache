@@ -71,7 +71,20 @@ void Cache::load(char dataOut[], unsigned byteAddress, unsigned numBytes)
 
 void Cache::flush()
 {
-	
+	for (unsigned i = 0; i < setsPerCache; i++)
+	{
+		try
+		{
+			set[i]->flush();
+		}
+		catch (dataIsDirtyException e)
+		{
+			std::cout << e.what() << std::endl;
+			unsigned storeAddress = e.getTag()*wordsPerBlock*bytesPerWord;
+			loadToMemory(storeAddress, e.dirtyLocation());
+			i--;
+		}
+	}
 }
 
 void Cache::storeFromMemory(unsigned byteAddress)

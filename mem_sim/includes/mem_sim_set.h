@@ -19,6 +19,7 @@ public:
 	void loadToCpu(char dataOut[], unsigned tag, unsigned byteOffset, int bytesToLoad);
 	void loadToMemory(char dataOut[], void* blockRef, int bytesToLoad);
 	void incrementUnused(Block* usedBlock);
+	void flush();
 	
 private:
 	Block** block;

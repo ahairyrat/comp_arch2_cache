@@ -80,6 +80,7 @@ int main(int argc, char *argv[]){
 	dataTest.str("");
 	debugger.printCache(dataTest, &cache);
 	std::cout << std::hex << dataTest.str() << std::endl;
+	//cache.flush();
 	cache.load(dataOut, 320, bytesToLoad);
 	dataTest.str("");
 	debugger.printCache(dataTest, &cache);

@@ -69,6 +69,11 @@ void Cache::load(char dataOut[], unsigned byteAddress, unsigned numBytes)
 	}
 }
 
+void Cache::flush()
+{
+	
+}
+
 void Cache::storeFromMemory(unsigned byteAddress)
 {
 	unsigned setIndex = (byteAddress / (wordsPerBlock*bytesPerWord)) % setsPerCache;

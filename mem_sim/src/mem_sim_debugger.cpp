@@ -50,7 +50,7 @@ void Debugger::forceWord(Word* word, unsigned &count)
 void Debugger::printWord(std::stringstream& dataOut, Word* word)
 {
 	for (unsigned i = 0; i < word->bytesPerWord; i++)
-		dataOut << (unsigned)word->byte[i];
+		dataOut << std::hex << (unsigned)word->byte[i];
 }
 
 void Debugger::forceBlock(Block* block)

@@ -22,7 +22,7 @@ int main(int argc, char *argv[]){
 		addressBits = 10;
 		bytesPerWord = 8;
 		wordsPerBlock = 4;
-		blocksPerSet = 2;
+		blocksPerSet = 1;
 		setsPerCache = 10;
 		hitTime = 0;
 		memReadTime = 0;
@@ -61,21 +61,40 @@ int main(int argc, char *argv[]){
 
 	Debugger debugger;
 	std::stringstream dataTest;
-	unsigned bytesToLoad = 32;
+	unsigned bytesToLoad = 8;
 	char* dataOut = new char[bytesToLoad];
-	char dataIn[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 8, 7, 6, 5, 4, 3, 2 };
+	char dataIn[] = { 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF, 0x1 };
 	//debugger.forceCache(&cache);
 
 	debugger.printCache(dataTest, &cache);
-	std::cout << dataTest.str() << std::endl;
+	std::cout << std::hex << dataTest.str() << std::endl;
 	dataTest.str("");
 	cache.store(dataIn, 5, 2*bytesPerWord);
 	debugger.printCache(dataTest, &cache);
-	std::cout << dataTest.str() << std::endl;
+	std::cout << std::hex << dataTest.str() << std::endl;
 	cache.load(dataOut, 10, bytesToLoad);
 	for (unsigned i = 0; i < bytesToLoad; i++)
-		std::cout << (unsigned)dataOut[i];
+		std::cout << std::hex << (unsigned)dataOut[i];
 	std::cout << std::endl;
+	cache.store(dataIn, 10, bytesPerWord);
+	dataTest.str("");
+	debugger.printCache(dataTest, &cache);
+	std::cout << std::hex << dataTest.str() << std::endl;
+	cache.load(dataOut, 320, bytesToLoad);
+	dataTest.str("");
+	debugger.printCache(dataTest, &cache);
+	std::cout << std::hex << dataTest.str() << std::endl;
+	for (unsigned i = 0; i < bytesToLoad; i++)
+		std::cout << std::hex << (unsigned)dataOut[i];
+	dataTest.str("");
+	debugger.printMemory(dataTest, &memory);
+	std::cout << std::hex << dataTest.str() << std::endl;
+	cache.load(dataOut, 0, bytesToLoad);
+	dataTest.str("");
+	debugger.printCache(dataTest, &cache);
+	std::cout << std::hex << dataTest.str() << std::endl;
+	for (unsigned i = 0; i < bytesToLoad; i++)
+		std::cout << std::hex << (unsigned)dataOut[i];
 	getchar();
 	delete[] dataOut;
 }

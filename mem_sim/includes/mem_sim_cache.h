@@ -21,6 +21,8 @@ public:
 	void store(char dataIn[], unsigned byteAddress, unsigned numBytes);
 	void load(char dataOut[], unsigned byteAddress, unsigned numBytes);
 
+	void flush();
+
 
 private:
 	Set** set;

@@ -10,7 +10,7 @@ Memory::Memory(
 	) : bytesPerWord(bytesPerWord), wordsPerBlock(wordsPerBlock), memReadTime(memReadTime), memWriteTime(memWriteTime)
 {
 	blockLength = wordsPerBlock*bytesPerWord;
-	memorySize = (2 << (addressBits-1)) / blockLength;
+	memorySize = (1 << addressBits) / blockLength;
 	bytesPerBlock = bytesPerWord*wordsPerBlock;
 	data = new char*[memorySize];
 	for (unsigned i = 0; i < memorySize; i++)

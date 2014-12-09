@@ -1,4 +1,5 @@
 
+#include <iostream>
 #include <sstream>
 #include "mem_sim_parser.h"
 #include "mem_sim_exceptions.h"
@@ -42,11 +43,12 @@ std::vector<std::string> Parser::tokenize(std::string inputString)
 	unsigned end = 0;
 	while (begin < inputString.length() && end < inputString.length())
 	{
-		end = inputString.find(" ");
+		end = inputString.find(' ', begin);
 		if (end == begin)
-			end = inputString.find('\n');
+			end = inputString.find('\n', begin);
 		result.push_back(inputString.substr(begin, end - begin));
-		begin = end + 1;
+		std::cout << "Found " << inputString.substr(begin, end - begin) << std::endl;
+		begin = end;
 	}
 	return result;
 }

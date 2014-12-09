@@ -70,7 +70,7 @@ void Debugger::forceBlock(Block* block,unsigned &count)
 
 void Debugger::printBlock(std::stringstream& dataOut, Block* block)
 {
-	dataOut << "(V" << block->isValid() << ",D" << block->isDirty() << ")";
+	dataOut << "(V" << block->isValid() << ",D" << block->isDirty() << ",T" << block->getTag() << ")";
 	for (unsigned i = 0; i < block->wordsPerBlock; i++)
 	{
 		printWord(dataOut, block->word[i]);
@@ -109,8 +109,10 @@ void Debugger::forceCache(Cache* cache)
 
 void Debugger::printCache(std::stringstream& dataOut, Cache* cache)
 {
+	//rework dash number
 	unsigned dashNumber = (cache->set[0]->blocksPerSet)*(cache->set[0]->block[0]->wordsPerBlock)*(cache->set[0]->block[0]->word[0]->bytesPerWord);
 	dashNumber += cache->set[0]->blocksPerSet;
+	dashNumber += 7;
 	for (unsigned i = 0; i < cache->setsPerCache; i++)
 	{
 		printSet(dataOut, cache->set[i]);

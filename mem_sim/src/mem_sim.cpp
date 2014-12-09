@@ -1,4 +1,6 @@
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <sstream>
 #include <iostream>
 #include <vector>
@@ -23,7 +25,7 @@ int main(int argc, char *argv[]){
 		addressBits = 10;
 		bytesPerWord = 8;
 		wordsPerBlock = 4;
-		blocksPerSet = 1;
+		blocksPerSet = 2;
 		setsPerCache = 10;
 		hitTime = 0;
 		memReadTime = 0;
@@ -63,12 +65,14 @@ int main(int argc, char *argv[]){
 	std::string commandString;
 	std::string command;
 	std::vector<std::string> commandTokens;
+	std::stringstream debugStream;
 	while (!endOfInput)
 	{
-		std::cin >> commandString;
+		getline(std::cin, commandString);
 		try{
 			commandTokens = parser.parse(commandString);
 			command = commandTokens[0];
+			debugStream << commandString << std::endl;
 			if (command == "read-req" || command == "READ-REQ")
 			{
 				if (commandTokens.size() != 2)
@@ -79,7 +83,16 @@ int main(int argc, char *argv[]){
 					ss << " specified";
 					throw invalidinputException(ss.str().c_str());
 				}
+				char* dataOut = new char[bytesPerWord];
 				std::cout << "read-ack" << std::endl;
+				unsigned address = (unsigned)(stoi(commandTokens[1]));
+				std::cout << address << std::endl;
+				cache.load(dataOut, address, bytesPerWord);
+				for (unsigned i = 0; i < bytesPerWord; i++)
+					std::cout << std::hex << (unsigned)dataOut[i];
+				std::cout << std::endl;
+				debugger.printCache(debugStream, &cache);
+				delete[] dataOut;
 			}
 			else if (command == "write-req" || command == "WRITE-REQ")
 			{
@@ -92,6 +105,14 @@ int main(int argc, char *argv[]){
 					throw invalidinputException(ss.str().c_str());
 				}
 				std::cout << "write-ack" << std::endl;
+				unsigned address = (unsigned)(stoi(commandTokens[1]));
+				std::cout << address << std::endl;
+				char * writable = new char[commandTokens[2].size() + 1];
+				strcpy(writable, commandTokens[2].c_str());
+				writable[commandTokens[2].size()] = '\0';
+				cache.store(writable, address, bytesPerWord);
+				debugger.printCache(debugStream, &cache);
+				delete[] writable;
 			}
 			else if (command == "flush-req" || command == "FLUSH-REQ")
 			{
@@ -116,6 +137,8 @@ int main(int argc, char *argv[]){
 					throw invalidinputException(ss.str().c_str());
 				}
 				std::cout << "debug-ack" << std::endl;
+				std::cout << debugStream.str() << std::endl;
+				debugStream.str("");
 			}
 			else if (commandString == "\n")
 			{

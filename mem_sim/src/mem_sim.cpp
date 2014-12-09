@@ -1,6 +1,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <vector>
 #include "mem_sim_cache.h"
 #include "mem_sim_memory.h"
 #include "mem_sim_parser.h"
@@ -56,48 +57,76 @@ int main(int argc, char *argv[]){
 		hitTime,
 		&memory
 	);
-
-	
-
 	Debugger debugger;
-	std::stringstream dataTest;
-	unsigned bytesToLoad = 8;
-	char* dataOut = new char[bytesToLoad];
-	char dataIn[] = { 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF, 0x1 };
-	//debugger.forceCache(&cache);
-
-	debugger.printCache(dataTest, &cache);
-	std::cout << std::hex << dataTest.str() << std::endl;
-	dataTest.str("");
-	cache.store(dataIn, 5, 2*bytesPerWord);	//dirty = 1;
-	debugger.printCache(dataTest, &cache);
-	std::cout << std::hex << dataTest.str() << std::endl;
-	cache.load(dataOut, 10, bytesToLoad);
-	for (unsigned i = 0; i < bytesToLoad; i++)
-		std::cout << std::hex << (unsigned)dataOut[i];
-	std::cout << std::endl;
-	cache.store(dataIn, 10, bytesPerWord);
-	dataTest.str("");
-	debugger.printCache(dataTest, &cache);
-	std::cout << std::hex << dataTest.str() << std::endl;
-	//cache.flush();
-	cache.load(dataOut, 320, bytesToLoad);
-	dataTest.str("");
-	debugger.printCache(dataTest, &cache);
-	std::cout << std::hex << dataTest.str() << std::endl;
-	for (unsigned i = 0; i < bytesToLoad; i++)
-		std::cout << std::hex << (unsigned)dataOut[i];
-	std::cout << std::endl;
-	dataTest.str("");
-	debugger.printMemory(dataTest, &memory);
-	std::cout << std::hex << dataTest.str() << std::endl;
-	cache.load(dataOut, 0, bytesToLoad);
-	dataTest.str("");
-	debugger.printCache(dataTest, &cache);
-	std::cout << std::hex << dataTest.str() << std::endl;
-	for (unsigned i = 0; i < bytesToLoad; i++)
-		std::cout << std::hex << (unsigned)dataOut[i];
-	std::cout << std::endl;
-	getchar();
-	delete[] dataOut;
+	Parser parser;
+	bool endOfInput = false;
+	std::string commandString;
+	std::string command;
+	std::vector<std::string> commandTokens;
+	while (!endOfInput)
+	{
+		std::cin >> commandString;
+		try{
+			commandTokens = parser.parse(commandString);
+			command = commandTokens[0];
+			if (command == "read-req" || command == "READ-REQ")
+			{
+				if (commandTokens.size() != 2)
+				{
+					std::stringstream ss;
+					ss << "read-req requires 1 input, ";
+					ss << (commandTokens.size() - 1 <= 0 ? 0 : commandTokens.size() - 1);
+					ss << " specified";
+					throw invalidinputException(ss.str().c_str());
+				}
+				std::cout << "read-ack" << std::endl;
+			}
+			else if (command == "write-req" || command == "WRITE-REQ")
+			{
+				if(commandTokens.size() != 3)
+				{
+					std::stringstream ss;
+					ss << "write-req requires 2 inputs, ";
+					ss << (commandTokens.size() - 1 <= 0 ? 0 : commandTokens.size() - 1);
+					ss << " specified";
+					throw invalidinputException(ss.str().c_str());
+				}
+				std::cout << "write-ack" << std::endl;
+			}
+			else if (command == "flush-req" || command == "FLUSH-REQ")
+			{
+				if (commandTokens.size() != 1)
+				{
+					std::stringstream ss;
+					ss << "flush-req requires 0 inputs, ";
+					ss << (commandTokens.size() - 1 <= 0 ? 0 : commandTokens.size() - 1);
+					ss << " specified";
+					throw invalidinputException(ss.str().c_str());
+				}
+				std::cout << "flush-ack" << std::endl;
+			}
+			else if (command == "debug-req" || command == "DEBUG-REQ")
+			{
+				if (commandTokens.size() != 1)
+				{
+					std::stringstream ss;
+					ss << "debug-req requires 0 inputs, ";
+					ss << (commandTokens.size() - 1 <= 0 ? 0 : commandTokens.size() - 1);
+					ss << " specified";
+					throw invalidinputException(ss.str().c_str());
+				}
+				std::cout << "debug-ack" << std::endl;
+			}
+			else if (commandString == "\n")
+			{
+				endOfInput = true;
+			}
+		}
+		catch (invalidinputException e)
+		{
+			std::cout << e.what() << std::endl;
+		}
+		commandString.clear();
+		command.clear();
+	}
 }

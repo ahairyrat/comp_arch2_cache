@@ -1,5 +1,5 @@
 
-
+#include <sstream>
 #include "mem_sim_parser.h"
 #include "mem_sim_exceptions.h"
 
@@ -22,8 +22,15 @@ std::vector<std::string> Parser::parse(std::string inputString)
 		result[0] != "write-req" &&
 		result[0] != "flush-req" &&
 		result[0] != "debug-req" &&
-		result[0] != "#")
-		throw invalidinputException(inputString.c_str());
+		result[0][0] != '#' &&
+		result[0] != "\n"
+		)
+	{
+		std::stringstream ss;
+		ss << "Unknown input: ";
+		ss << inputString;
+		throw invalidinputException(ss.str().c_str());
+	}
 	return result;
 }
 
@@ -36,6 +43,8 @@ std::vector<std::string> Parser::tokenize(std::string inputString)
 	while (begin < inputString.length() && end < inputString.length())
 	{
 		end = inputString.find(" ");
+		if (end == begin)
+			end = inputString.find('\n');
 		result.push_back(inputString.substr(begin, end - begin));
 		begin = end + 1;
 	}

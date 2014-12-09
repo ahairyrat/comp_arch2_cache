@@ -49,7 +49,6 @@ void Memory::write(char dataIn[], unsigned address, unsigned storeLength)
 	unsigned blockNumber = address / bytesPerBlock;
 	unsigned offset = address - (blockNumber*bytesPerBlock);
 	int blocksToLoad = ((offset + storeLength) / bytesPerBlock) + ((offset + storeLength) % bytesPerBlock != 0);
-	std::cout << std::dec << "Address " << address << " Storing in block " << blockNumber << " in word " << offset / bytesPerWord << std::endl;
 	while (blocksToLoad > 0)
 	{
 		writeWord(dataIn, blockNumber);

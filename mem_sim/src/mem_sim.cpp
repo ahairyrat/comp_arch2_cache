@@ -69,7 +69,7 @@ int main(int argc, char *argv[]){
 	debugger.printCache(dataTest, &cache);
 	std::cout << std::hex << dataTest.str() << std::endl;
 	dataTest.str("");
-	cache.store(dataIn, 5, 2*bytesPerWord);
+	cache.store(dataIn, 5, 2*bytesPerWord);	//dirty = 1;
 	debugger.printCache(dataTest, &cache);
 	std::cout << std::hex << dataTest.str() << std::endl;
 	cache.load(dataOut, 10, bytesToLoad);
@@ -86,6 +86,7 @@ int main(int argc, char *argv[]){
 	std::cout << std::hex << dataTest.str() << std::endl;
 	for (unsigned i = 0; i < bytesToLoad; i++)
 		std::cout << std::hex << (unsigned)dataOut[i];
+	std::cout << std::endl;
 	dataTest.str("");
 	debugger.printMemory(dataTest, &memory);
 	std::cout << std::hex << dataTest.str() << std::endl;
@@ -95,6 +96,7 @@ int main(int argc, char *argv[]){
 	std::cout << std::hex << dataTest.str() << std::endl;
 	for (unsigned i = 0; i < bytesToLoad; i++)
 		std::cout << std::hex << (unsigned)dataOut[i];
+	std::cout << std::endl;
 	getchar();
 	delete[] dataOut;
 }

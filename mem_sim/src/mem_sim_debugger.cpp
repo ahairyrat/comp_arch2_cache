@@ -70,6 +70,7 @@ void Debugger::forceBlock(Block* block,unsigned &count)
 
 void Debugger::printBlock(std::stringstream& dataOut, Block* block)
 {
+	dataOut << "(V" << block->isValid() << ",D" << block->isDirty() << ")";
 	for (unsigned i = 0; i < block->wordsPerBlock; i++)
 	{
 		printWord(dataOut, block->word[i]);

@@ -18,8 +18,8 @@ public:
 		);
 	virtual ~Cache();
 
-	void store(char dataIn[], unsigned byteAddress);
-	void load(char dataOut[], unsigned byteAddress);
+	void store(char dataIn[], unsigned byteAddress, unsigned numBytes);
+	void load(char dataOut[], unsigned byteAddress, unsigned numBytes);
 
 
 private:

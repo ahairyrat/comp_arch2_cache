@@ -30,11 +30,13 @@ public:
 class dataSplitException : public std::exception {
 private:
 	std::string errorMessage;
+	unsigned dataReadVal;
 
 public:
-	dataSplitException(const char* msg) : errorMessage(msg){}
+	dataSplitException(const char* msg, const unsigned dataRead) : errorMessage(msg), dataReadVal(dataRead){}
 	~dataSplitException() {}
 	const char *what() { return this->errorMessage.c_str(); }
+	const unsigned dataRead(){ return dataReadVal; }
 };
 
 class invalidinputException : public std::exception {

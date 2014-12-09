@@ -27,23 +27,29 @@ Cache::~Cache() {
 	delete[] set;
 }
 
-void Cache::store(char dataIn[], unsigned byteAddress)
+void Cache::store(char dataIn[], unsigned byteAddress, unsigned numBytes)
 {
 	unsigned setIndex = (byteAddress/(blocksPerSet*wordsPerBlock*bytesPerWord))%setsPerCache;
 	unsigned tag = byteAddress;
 	unsigned offset = byteAddress%(wordsPerBlock*bytesPerWord);
 	try{
-		set[setIndex]->storeFromCpu(dataIn, tag, offset, bytesPerWord);
+		set[setIndex]->storeFromCpu(dataIn, tag, offset, numBytes);
 	}
 	catch (dataNotAvailableException e)
 	{
 		std::cout << e.what() << std::endl;
 		storeFromMemory(byteAddress);
-		set[setIndex]->storeFromCpu(dataIn, tag, offset, bytesPerWord);
+		store(dataIn, byteAddress, numBytes);
+	}
+	catch (dataSplitException e)
+	{
+		std::cout << e.what() << std::endl;
+		unsigned remByteAddress = byteAddress + e.dataRead();
+		store(dataIn + e.dataRead(), remByteAddress, numBytes - e.dataRead())
 	}
 }
 
-void Cache::load(char dataOut[], unsigned byteAddress)
+void Cache::load(char dataOut[], unsigned byteAddress, unsigned numBytes)
 {
 	//Fix this
 	/*

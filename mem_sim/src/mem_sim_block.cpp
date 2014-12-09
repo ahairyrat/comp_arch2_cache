@@ -33,47 +33,49 @@ void Block::update(char dataIn[], unsigned tag)
 	this->valid = true;
 }
 
-void Block::store(char dataIn[], unsigned byteOffset, int &numberOfBytes)
+void Block::store(char dataIn[], unsigned byteOffset, int numberOfBytes)
 {
+	unsigned bytesLeft = numberOfBytes;
 	unsigned wordNumber = byteOffset / bytesPerWord;
 	unsigned offset = byteOffset % bytesPerWord;
 	unsigned storeLength = bytesPerWord - offset;
 	char* dataInPtr = dataIn;
-	while (numberOfBytes > 0 && wordNumber < wordsPerBlock)
+	while (bytesLeft > 0 && wordNumber < wordsPerBlock)
 	{
-		storeLength = calculateLoadLength(numberOfBytes, offset);
+		storeLength = calculateLoadLength(bytesLeft, offset);
 		word[wordNumber]->store(offset, storeLength, dataInPtr);
 		offset = 0;
 		wordNumber++;
-		numberOfBytes -= storeLength;
+		bytesLeft -= storeLength;
 		dataInPtr += storeLength;
 	}
 	this->used();
 	this->dirty = true;
 	//if only partial data has been stored
-	if (numberOfBytes > 0)
-		throw dataSplitException("data is split over multiple blocks");
+	if (bytesLeft > 0)
+		throw dataSplitException("data is split over multiple blocks", numberOfBytes-bytesLeft);
 }
 
-void Block::load(char dataOut[], unsigned byteOffset, int &numberOfBytes)
+void Block::load(char dataOut[], unsigned byteOffset, int numberOfBytes)
 {
+	unsigned bytesLeft = numberOfBytes;
 	unsigned wordNumber = byteOffset / bytesPerWord;
 	unsigned offset = byteOffset % bytesPerWord;
 	unsigned loadLength = bytesPerWord - offset;
 	char* dataOutPtr = &dataOut[0];
-	while (numberOfBytes > 0 && wordNumber < wordsPerBlock)
+	while (bytesLeft > 0 && wordNumber < wordsPerBlock)
 	{
-		loadLength = calculateLoadLength(numberOfBytes, offset);
+		loadLength = calculateLoadLength(bytesLeft, offset);
 		word[wordNumber]->load(offset, loadLength, dataOutPtr);
 		offset =  0;
 		wordNumber++;
-		numberOfBytes -= loadLength;
+		bytesLeft -= loadLength;
 		dataOutPtr += loadLength;
 	}
 	this->used();
 	//if only partial data has been loaded
-	if (numberOfBytes > 0)
-		throw dataSplitException("data is split over multiple blocks");
+	if (bytesLeft > 0)
+		throw dataSplitException("data is split over multiple blocks", numberOfBytes-bytesLeft);
 }
 
 void Block::used()

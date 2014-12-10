@@ -41,13 +41,13 @@ public:
 	const unsigned dataUsed(){ return dataUsedVal; }
 };
 
-class invalidinputException : public std::exception {
+class invalidInputException : public std::exception {
 private:
 	std::string errorMessage;
 
 public:
-	invalidinputException(const char* msg) : errorMessage(msg){}
-	~invalidinputException() {}
+	invalidInputException(const char* msg) : errorMessage(msg){}
+	~invalidInputException() {}
 	const char *what() { return this->errorMessage.c_str(); }
 };
 

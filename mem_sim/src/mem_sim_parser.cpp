@@ -28,13 +28,12 @@ std::vector<std::string> Parser::parse(std::string inputString)
 		)
 	{
 		std::stringstream ss;
-		ss << "Unknown input: ";
+		ss << "#Unknown input: ";
 		ss << inputString;
-		throw invalidinputException(ss.str().c_str());
+		throw invalidInputException(ss.str().c_str());
 	}
 	return result;
 }
-
 
 std::vector<std::string> Parser::tokenize(std::string inputString)
 {
@@ -47,8 +46,7 @@ std::vector<std::string> Parser::tokenize(std::string inputString)
 		if (end == begin)
 			end = inputString.find('\n', begin);
 		result.push_back(inputString.substr(begin, end - begin));
-		std::cout << "Found " << inputString.substr(begin, end - begin) << std::endl;
-		begin = end;
+		begin = end+1;
 	}
 	return result;
 }

@@ -1,4 +1,16 @@
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//This are default setting for initialisation should no parameters be given
+#define ADDRESSBITS 8
+#define BYTESPERWORD 8
+#define WORDSPERBLOCK 4
+#define BLOCKSPERSET 1
+#define SETSPERCACHE 10
+#define HITTIME 0
+#define MEMREADTIME 0
+#define MEMWRITETIME 0
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <sstream>
@@ -10,6 +22,10 @@
 #include "mem_sim_debugger.h"
 #include "mem_sim_exceptions.h"
 
+int convertToInt(char charIn);
+int convertToInt(std::string stringIn);
+void printCString(char* string, int size);
+std::string buildInvalidStringStream(std::string instruction, int inputParameters);
 
 int main(int argc, char *argv[]){
 	unsigned addressBits;
@@ -20,16 +36,19 @@ int main(int argc, char *argv[]){
 	unsigned hitTime;
 	unsigned memReadTime;
 	unsigned memWriteTime;
+
+	//Extracting of input information
+
 	if (argc < 8)
 	{
-		addressBits = 10;
-		bytesPerWord = 8;
-		wordsPerBlock = 4;
-		blocksPerSet = 2;
-		setsPerCache = 10;
-		hitTime = 0;
-		memReadTime = 0;
-		memWriteTime = 0;
+		addressBits = ADDRESSBITS;
+		bytesPerWord = BYTESPERWORD;
+		wordsPerBlock = WORDSPERBLOCK;
+		blocksPerSet = BLOCKSPERSET;
+		setsPerCache = SETSPERCACHE;
+		hitTime = HITTIME;
+		memReadTime = MEMREADTIME;
+		memWriteTime = MEMWRITETIME;
 	}
 	else
 	{
@@ -42,6 +61,8 @@ int main(int argc, char *argv[]){
 		memReadTime = *(unsigned*)argv[6];
 		memWriteTime = *(unsigned*)argv[7];
 	}
+
+	//initialisation of required objects
 
 	Memory memory(
 		addressBits,
@@ -59,8 +80,13 @@ int main(int argc, char *argv[]){
 		hitTime,
 		&memory
 	);
+
 	Debugger debugger;
 	Parser parser;
+
+	// end of initialisation
+
+
 	bool endOfInput = false;
 	std::string commandString;
 	std::string command;
@@ -70,46 +96,40 @@ int main(int argc, char *argv[]){
 	{
 		getline(std::cin, commandString);
 		try{
+			if (commandTokens.size() == 0)
+				break;
 			commandTokens = parser.parse(commandString);
 			command = commandTokens[0];
 			debugStream << commandString << std::endl;
 			if (command == "read-req" || command == "READ-REQ")
 			{
 				if (commandTokens.size() != 2)
-				{
-					std::stringstream ss;
-					ss << "read-req requires 1 input, ";
-					ss << (commandTokens.size() - 1 <= 0 ? 0 : commandTokens.size() - 1);
-					ss << " specified";
-					throw invalidinputException(ss.str().c_str());
-				}
-				char* dataOut = new char[bytesPerWord];
+					throw invalidInputException(buildInvalidStringStream("read-req", commandTokens.size()-1).c_str());
+
 				std::cout << "read-ack" << std::endl;
-				unsigned address = (unsigned)(stoi(commandTokens[1]));
-				std::cout << address << std::endl;
+				//stoi unsuitable for hex
+				unsigned address = convertToInt(commandTokens[1]);
+
+				char* dataOut = new char[bytesPerWord+1];
 				cache.load(dataOut, address, bytesPerWord);
-				for (unsigned i = 0; i < bytesPerWord; i++)
-					std::cout << std::hex << (unsigned)dataOut[i];
-				std::cout << std::endl;
+				printCString(dataOut, bytesPerWord);
 				debugger.printCache(debugStream, &cache);
 				delete[] dataOut;
 			}
 			else if (command == "write-req" || command == "WRITE-REQ")
 			{
 				if(commandTokens.size() != 3)
-				{
-					std::stringstream ss;
-					ss << "write-req requires 2 inputs, ";
-					ss << (commandTokens.size() - 1 <= 0 ? 0 : commandTokens.size() - 1);
-					ss << " specified";
-					throw invalidinputException(ss.str().c_str());
-				}
+					throw invalidInputException(buildInvalidStringStream("write-req", commandTokens.size() - 1).c_str());
+
 				std::cout << "write-ack" << std::endl;
-				unsigned address = (unsigned)(stoi(commandTokens[1]));
-				std::cout << address << std::endl;
-				char * writable = new char[commandTokens[2].size() + 1];
+				//stoi unsuitable for hex
+				unsigned address = convertToInt(commandTokens[1]);
+				char * writable = new char[bytesPerWord + 1];
 				strcpy(writable, commandTokens[2].c_str());
-				writable[commandTokens[2].size()] = '\0';
+
+				for (unsigned i = 0; i < bytesPerWord; i++)
+					writable[i] = convertToInt(writable[i]);
+				
 				cache.store(writable, address, bytesPerWord);
 				debugger.printCache(debugStream, &cache);
 				delete[] writable;
@@ -117,39 +137,75 @@ int main(int argc, char *argv[]){
 			else if (command == "flush-req" || command == "FLUSH-REQ")
 			{
 				if (commandTokens.size() != 1)
-				{
-					std::stringstream ss;
-					ss << "flush-req requires 0 inputs, ";
-					ss << (commandTokens.size() - 1 <= 0 ? 0 : commandTokens.size() - 1);
-					ss << " specified";
-					throw invalidinputException(ss.str().c_str());
-				}
+					throw invalidInputException(buildInvalidStringStream("flush-req", commandTokens.size() - 1).c_str());
+
 				std::cout << "flush-ack" << std::endl;
+				cache.flush();
+				debugger.printCache(debugStream, &cache);
 			}
 			else if (command == "debug-req" || command == "DEBUG-REQ")
 			{
 				if (commandTokens.size() != 1)
-				{
-					std::stringstream ss;
-					ss << "debug-req requires 0 inputs, ";
-					ss << (commandTokens.size() - 1 <= 0 ? 0 : commandTokens.size() - 1);
-					ss << " specified";
-					throw invalidinputException(ss.str().c_str());
-				}
-				std::cout << "debug-ack" << std::endl;
+					throw invalidInputException(buildInvalidStringStream("debug-req", commandTokens.size() - 1).c_str());
+
+				std::cout << "debug-ack-begin" << std::endl;
 				std::cout << debugStream.str() << std::endl;
+				std::cout << "debug-ack-end" << std::endl;
 				debugStream.str("");
 			}
-			else if (commandString == "\n")
-			{
+			else
 				endOfInput = true;
-			}
 		}
-		catch (invalidinputException e)
+		catch (invalidInputException e)
 		{
-			std::cout << e.what() << std::endl;
+			std::cout << "# " << e.what() << std::endl;
+		}
+		catch (std::out_of_range e)
+		{
+			std::cout << "# " << e.what() << std::endl;
 		}
 		commandString.clear();
 		command.clear();
 	}
+}
+
+int convertToInt(char charIn)
+{
+	int x;
+	std::stringstream ss;
+	ss << std::hex << charIn;
+	ss >> x;
+	return x;
+}
+
+int convertToInt(std::string stringIn)
+{
+	int x;
+	std::stringstream ss;
+	ss << std::dec << stringIn;
+	ss >> x;
+	return x;
+
+}
+
+void printCString(char* string, int size)
+{
+	std::cout << (int)string[0] << std::endl;
+	for (int i = 0; i < size; i++)
+		std::cout << std::hex << (unsigned)string[i];
+	std::cout << std::endl;
+}
+
+std::string buildInvalidStringStream(std::string instruction, int inputParameters)
+{
+	std::stringstream ss;
+	ss << "# Error: " << instruction << " requires ";
+	if (instruction == "read-req")
+		ss << "1";
+	else if (instruction == "write-req")
+		ss << "2";
+	else
+		ss << "0";
+	ss << " inputs, " << (inputParameters <= 0 ? 0 : inputParameters)<< " specified";
+	return ss.str();
 }

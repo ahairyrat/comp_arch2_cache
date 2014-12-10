@@ -110,6 +110,7 @@ void Debugger::forceCache(Cache* cache)
 void Debugger::printCache(std::stringstream& dataOut, Cache* cache)
 {
 	//rework dash number
+	dataOut << std::hex;
 	unsigned dashNumber = (cache->set[0]->blocksPerSet)*(cache->set[0]->block[0]->wordsPerBlock)*(cache->set[0]->block[0]->word[0]->bytesPerWord);
 	dashNumber += cache->set[0]->blocksPerSet;
 	dashNumber += 7;
@@ -125,7 +126,7 @@ void Debugger::printCache(std::stringstream& dataOut, Cache* cache)
 
 void Debugger::printMemory(std::stringstream& dataOut, Memory* memory)
 {
-	for (unsigned i = 0; i < memory->memorySize; i++)
+	for (unsigned i = 0; i < memory->memoryBlockSize; i++)
 	{
 		for (unsigned j = 0; j < memory->bytesPerBlock; j++)
 		{

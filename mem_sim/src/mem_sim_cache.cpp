@@ -1,5 +1,4 @@
 
-#include <iostream>
 #include "mem_sim_cache.h"
 #include "mem_sim_exceptions.h"
 
@@ -37,13 +36,11 @@ void Cache::store(char dataIn[], unsigned byteAddress, unsigned numBytes)
 	}
 	catch (dataNotAvailableException e)
 	{
-		std::cout << e.what() << std::endl;
 		storeFromMemory(byteAddress);
 		store(dataIn, byteAddress, numBytes);
 	}
 	catch (dataSplitException e)
 	{
-		std::cout << e.what() << std::endl;
 		store(dataIn + e.dataUsed(), byteAddress + e.dataUsed(), numBytes - e.dataUsed());
 	}
 }
@@ -58,13 +55,11 @@ void Cache::load(char dataOut[], unsigned byteAddress, unsigned numBytes)
 	}
 	catch (dataNotAvailableException e)
 	{
-		std::cout << e.what() << std::endl;
 		storeFromMemory(byteAddress);
 		load(dataOut, byteAddress, numBytes);
 	}
 	catch (dataSplitException e)
 	{
-		std::cout << e.what() << std::endl;
 		load(dataOut + e.dataUsed(), byteAddress + e.dataUsed(), numBytes - e.dataUsed());
 	}
 }
@@ -79,7 +74,6 @@ void Cache::flush()
 		}
 		catch (dataIsDirtyException e)
 		{
-			std::cout << e.what() << std::endl;
 			unsigned storeAddress = e.getTag()*wordsPerBlock*bytesPerWord;
 			loadToMemory(storeAddress, e.dirtyLocation());
 			i--;
@@ -99,7 +93,6 @@ void Cache::storeFromMemory(unsigned byteAddress)
 	}
 	catch (dataIsDirtyException e)
 	{
-		std::cout << e.what() << std::endl;
 		unsigned storeAddress = e.getTag()*wordsPerBlock*bytesPerWord;
 		loadToMemory(storeAddress, e.dirtyLocation());
 		set[setIndex]->storeFromMemory(data, tag, e.dirtyLocation());

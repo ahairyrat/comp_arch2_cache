@@ -2,6 +2,8 @@
 #ifndef MEM_SIM_MEMORY_H_
 #define MEM_SIM_MEMORY_H_
 
+#include <string>
+
 class Memory{
 	friend class Debugger;
 public:
@@ -22,7 +24,8 @@ public:
 private:
 	char** data;
 	unsigned blockLength;
-	unsigned memorySize;
+	unsigned memoryCapacity;
+	unsigned memoryBlockSize;
 	unsigned bytesPerWord;
 	unsigned wordsPerBlock;
 	unsigned memReadTime;
@@ -31,6 +34,8 @@ private:
 
 	void readWord(char dataOut[], unsigned blockNumber);
 	void writeWord(char dataIn[], unsigned blockNumber);
+
+	std::string buildOutOfMemoryString(int address, int loadLength);
 };
 
 #endif /* MEM_SIM_MEMORY_H_ */

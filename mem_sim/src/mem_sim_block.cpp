@@ -54,7 +54,7 @@ void Block::store(Byte dataIn[], unsigned byteOffset, int numberOfBytes)
 	this->dirty = true;
 	//if only partial data has been stored
 	if (bytesLeft > 0)
-		throw dataSplitException("data is split over multiple blocks", numberOfBytes-bytesLeft);
+		throw dataSplitException("#Error: Data is split over multiple blocks", numberOfBytes-bytesLeft);
 }
 
 void Block::load(Byte dataOut[], unsigned byteOffset, int numberOfBytes)
@@ -76,7 +76,7 @@ void Block::load(Byte dataOut[], unsigned byteOffset, int numberOfBytes)
 	this->used();
 	//if only partial data has been loaded
 	if (bytesLeft > 0)
-		throw dataSplitException("data is split over multiple blocks", numberOfBytes-bytesLeft);
+		throw dataSplitException("#Error: Data is split over multiple blocks", numberOfBytes-bytesLeft);
 }
 
 void Block::used()

@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+//A basic parser/tokenizer for input strings
 class Parser
 {
 public:

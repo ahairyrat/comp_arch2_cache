@@ -3,6 +3,7 @@
 #ifndef MEM_SIM_COUNTER_H_
 #define MEM_SIM_COUNTER_H_
 
+//A basic counter class
 class Counter
 {
 public:

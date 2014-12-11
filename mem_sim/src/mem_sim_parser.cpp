@@ -29,7 +29,7 @@ std::vector<std::string> Parser::parse(std::string inputString)
 		)
 	{
 		std::stringstream ss;
-		ss << "Unknown input: ";
+		ss << "#Error: Unknown input: ";
 		ss << inputString;
 		throw invalidInputException(ss.str().c_str());
 	}

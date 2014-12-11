@@ -13,6 +13,7 @@
 #define DEBUGBUFFERSIZE 20
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+//stops windows from warning about unsafe functions
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <sstream>
@@ -82,7 +83,7 @@ int main(int argc, char *argv[]){
 		&utilities
 		);
 	std::cout << "#Memory initialised" << std::endl;
-	std::cout << "#Initialising cache" << std::endl;
+	std::cout << "#Initialising cache ..." << std::endl;
 	Cache cache(
 		bytesPerWord,
 		wordsPerBlock,
@@ -96,10 +97,9 @@ int main(int argc, char *argv[]){
 	Debugger debugger;
 	Parser parser;
 	
-
-	// end of initialisation
-
-
+	//All required class constructed
+	
+	//Creating various data
 	bool endOfInput = false;
 	std::string commandString;
 	std::string command;
@@ -107,6 +107,9 @@ int main(int argc, char *argv[]){
 	unsigned debugStored = DEBUGBUFFERSIZE;
 	std::stringstream debugStream;
 	std::cout << "#Initialisation complete\n#Beginning command processing" << std::endl;
+	
+	// end of initialisation
+
 	while (!endOfInput)
 	{
 		getline(std::cin, commandString);
@@ -180,6 +183,7 @@ int main(int argc, char *argv[]){
 			}
 			else if (command == "debug-req" || command == "DEBUG-REQ")
 			{
+				//debug will print all instructions and chache states since the last debug request/ beginning of program
 				if (commandTokens.size() != 1)
 					throw invalidInputException(buildInvalidStringStream("debug-req", commandTokens.size() - 1).c_str());
 
@@ -191,12 +195,13 @@ int main(int argc, char *argv[]){
 		}
 		catch (invalidInputException e)
 		{
-			std::cout << "\n# " << e.what() << std::endl;
+			std::cout << "\n" << e.what() << std::endl;
 		}
 		catch (std::out_of_range e)
 		{
-			std::cout << "\n# " << e.what() << std::endl;
+			std::cout << "\n" << e.what() << std::endl;
 		}
+		//If the buffer is full, clear it and restart
 		if (debugStored == 0)
 			debugStream.str("");
 		commandString.clear();
@@ -234,7 +239,7 @@ void printByteString(Byte* string, int size)
 std::string buildInvalidStringStream(std::string instruction, int inputParameters)
 {
 	std::stringstream ss;
-	ss << "Error: " << instruction << " requires ";
+	ss << "#Error: " << instruction << " requires ";
 	if (instruction == "read-req")
 		ss << "1";
 	else if (instruction == "write-req")

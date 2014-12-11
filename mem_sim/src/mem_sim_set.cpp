@@ -29,7 +29,7 @@ void Set::storeFromCpu(Byte dataIn[], unsigned tag, unsigned byteOffset, int byt
 {
 	Block* storeBlock = findBlock(tag);
 	if (storeBlock == NULL)
-		throw dataNotAvailableException("Unable to store, data not in cache");
+		throw dataNotAvailableException("#Error: Unable to store, data not in cache");
 	storeBlock->store(dataIn, byteOffset, bytesToStore);
 	incrementUnused(storeBlock);
 }
@@ -51,7 +51,7 @@ void Set::storeFromMemory(Byte dataIn[], unsigned tag, void* blockRef)
 	else
 		storeBlock = (Block*)blockRef;
 	if (storeBlock->isDirty() && storeBlock->isValid())
-		throw dataIsDirtyException("Unable to store, data must be updated", storeBlock, storeBlock ->getTag());
+		throw dataIsDirtyException("#Error: Unable to store, data must be updated", storeBlock, storeBlock ->getTag());
 	storeBlock->update(dataIn, tag);
 }
 
@@ -60,7 +60,7 @@ void Set::loadToCpu(Byte dataOut[], unsigned tag, unsigned byteOffset, int bytes
 {
 	Block* loadBlock = findBlock(tag);
 	if (loadBlock == NULL)
-		throw dataNotAvailableException("Unable to load, data not in cache");
+		throw dataNotAvailableException("#Error: Unable to load, data not in cache");
 	loadBlock->load(dataOut, byteOffset, bytesToLoad);
 	incrementUnused(loadBlock);
 }
@@ -99,6 +99,7 @@ Block* Set::findEmpty()
 	for (unsigned i = 0; i < blocksPerSet; i++)
 		if (!block[i]->isValid())
 			return block[i];
+	//If all blocks are full, the first one is arbitrarily chosen
 	return block[0];
 }
 
@@ -113,5 +114,5 @@ void Set::flush()
 {
 	for (unsigned i = 0; i < blocksPerSet; i++)
 		if (block[i] ->isValid() && block[i]->isDirty())
-			throw dataIsDirtyException("Flushing Data", block[i], block[i]->getTag());
+			throw dataIsDirtyException("#Info: Flushing Data", block[i], block[i]->getTag());
 }

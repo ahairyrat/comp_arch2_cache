@@ -7,6 +7,8 @@
 #include "mem_sim_counter.h"
 
 class Block {
+	//This is done to disconnect the debugger from the member functions.
+	//This allows easier testing of load/store instructions via comparisons
 	friend class Debugger;
 public:
 	Block(

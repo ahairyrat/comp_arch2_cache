@@ -10,6 +10,8 @@
 #include "mem_sim_word.h"
 #include "mem_sim_memory.h"
 
+//Various debug functions for putting numbers into the cache or extracting them
+//Requires frendship with relevant cache structure to be independant of load/store instructions
 class Debugger{
 public:
 	Debugger();

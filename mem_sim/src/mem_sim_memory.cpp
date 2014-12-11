@@ -49,11 +49,14 @@ void Memory::read(Byte dataOut[], unsigned address, unsigned loadLength)
 void Memory::write(Byte dataIn[], unsigned address, unsigned storeLength)
 {
 	if (address + storeLength > memoryCapacity)
+		//The requested location does not exist
 		throw std::out_of_range(buildOutOfMemoryString(address, storeLength));
 	unsigned blockNumber = address / bytesPerBlock;
 	unsigned offset = address - (blockNumber*bytesPerBlock);
+	//calculates the amount of blocks required for the set of information
 	int blocksToLoad = ((offset + storeLength) / bytesPerBlock)
 		+ ((offset + storeLength) % bytesPerBlock != 0);
+	//The required blocks will be consecutive so can be traversed easily
 	while (blocksToLoad > 0)
 	{
 		writeWord(dataIn, blockNumber);
@@ -79,7 +82,7 @@ void Memory::writeWord(Byte dataIn[], unsigned blockNumber)
 std::string Memory::buildOutOfMemoryString(int address, int length)
 {
 	std::stringstream ss;
-	ss << "Error: Trying to access address " << address << " for " << length/2 << " bytes.";
+	ss << "#Error: Trying to access address " << address << " for " << length/2 << " bytes.";
 	ss << "\n#Memory is only " << memoryCapacity/2 << " bytes large." << std::endl;
 	return ss.str();
 }

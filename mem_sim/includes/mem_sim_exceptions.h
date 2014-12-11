@@ -5,6 +5,7 @@
 #include <exception>
 #include <string>
 
+//An exception to show that the data is not in the cache
 class dataNotAvailableException : public std::exception {
 private:
 	std::string errorMessage;
@@ -15,6 +16,8 @@ public:
 	const char *what() { return this->errorMessage.c_str(); }
 };
 
+//An exception based on the dirty flag
+//stores a pointer to the block and its tag value
 class dataIsDirtyException : public std::exception {
 private:
 	std::string err_msg;
@@ -29,6 +32,8 @@ public:
 	unsigned getTag(){ return tag; }
 };
 
+//An exception that shows that data is split over muliple blocks or sets.
+//dataUsedVal is a measure of how many bytes were in the current block
 class dataSplitException : public std::exception {
 private:
 	std::string errorMessage;

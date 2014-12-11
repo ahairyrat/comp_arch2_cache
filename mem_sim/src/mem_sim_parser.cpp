@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <string>
 #include <sstream>
 #include "mem_sim_parser.h"
 #include "mem_sim_exceptions.h"
@@ -24,7 +25,7 @@ std::vector<std::string> Parser::parse(std::string inputString)
 		result[0] != "flush-req" &&
 		result[0] != "debug-req" &&
 		result[0][0] != '#' &&
-		result[0] != "\n"
+		result[0] != "EOF"
 		)
 	{
 		std::stringstream ss;

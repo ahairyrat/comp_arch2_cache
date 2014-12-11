@@ -69,6 +69,7 @@
     <ClInclude Include="includes\mem_sim_cache.h" />
     <ClInclude Include="includes\mem_sim_exceptions.h" />
     <ClInclude Include="includes\mem_sim_set.h" />
+    <ClInclude Include="includes\mem_sim_utilities.h" />
     <ClInclude Include="includes\mem_sim_word.h" />
     <ClInclude Include="includes\mem_sim_memory.h" />
     <ClInclude Include="includes\mem_sim_counter.h" />

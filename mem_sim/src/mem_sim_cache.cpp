@@ -1,6 +1,7 @@
 
 #include "mem_sim_cache.h"
 #include "mem_sim_exceptions.h"
+#include "mem_sim_utilities.h"
 
 Cache::Cache(
 	unsigned bytesPerWord,
@@ -8,8 +9,9 @@ Cache::Cache(
 	unsigned blocksPerSet,
 	unsigned setsPerCache,
 	unsigned hitTime,
-	Memory* memory
-	) : bytesPerWord(bytesPerWord), setsPerCache(setsPerCache),blocksPerSet(blocksPerSet), wordsPerBlock(wordsPerBlock), memory(memory){
+	Memory* memory,
+	Utilities* utilities
+	) : bytesPerWord(bytesPerWord), setsPerCache(setsPerCache),blocksPerSet(blocksPerSet), wordsPerBlock(wordsPerBlock), hitTime(hitTime), memory(memory), utilities(utilities){
 	set = new Set*[setsPerCache+1];
 	for (unsigned i = 0; i < setsPerCache; i++)
 		set[i] = new Set(
@@ -33,11 +35,15 @@ void Cache::store(Byte dataIn[], unsigned byteAddress, unsigned numBytes)
 	unsigned offset = byteAddress%(wordsPerBlock*bytesPerWord);
 	try{
 		set[setIndex]->storeFromCpu(dataIn, tag, offset, numBytes);
+		utilities -> globalSetsUsed << (int)setIndex << " ";
+		utilities->globalHit = true;
+		utilities->globalTime += hitTime;
 	}
 	catch (dataNotAvailableException e)
 	{
 		storeFromMemory(byteAddress);
 		store(dataIn, byteAddress, numBytes);
+		utilities->globalHit = false;
 	}
 	catch (dataSplitException e)
 	{
@@ -52,11 +58,15 @@ void Cache::load(Byte dataOut[], unsigned byteAddress, unsigned numBytes)
 	unsigned offset = byteAddress % (wordsPerBlock*bytesPerWord);
 	try{
 		set[setIndex]->loadToCpu(dataOut, tag, offset, numBytes);
+		utilities->globalSetsUsed << (int)setIndex << " ";
+		utilities->globalHit = true;
+		utilities->globalTime += hitTime;
 	}
 	catch (dataNotAvailableException e)
 	{
 		storeFromMemory(byteAddress);
 		load(dataOut, byteAddress, numBytes);
+		utilities->globalHit = false;
 	}
 	catch (dataSplitException e)
 	{

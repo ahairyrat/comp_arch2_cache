@@ -4,6 +4,7 @@
 
 #include <string>
 #include "mem_sim_byte.h"
+#include "mem_sim_utilities.h"
 
 class Memory{
 	friend class Debugger;
@@ -13,7 +14,8 @@ public:
 		unsigned bytesPerWord,
 		unsigned wordsPerBlock,
 		unsigned memReadTime,
-		unsigned memWriteTime
+		unsigned memWriteTime,
+		Utilities* Utilities
 	);
 	virtual ~Memory();
 
@@ -37,6 +39,8 @@ private:
 	void writeWord(Byte dataIn[], unsigned blockNumber);
 
 	std::string buildOutOfMemoryString(int address, int loadLength);
+
+	Utilities* utilities;
 };
 
 #endif /* MEM_SIM_MEMORY_H_ */

@@ -7,8 +7,9 @@ Memory::Memory(
 	unsigned bytesPerWord,
 	unsigned wordsPerBlock,
 	unsigned memReadTime,
-	unsigned memWriteTime
-	) : bytesPerWord(bytesPerWord), wordsPerBlock(wordsPerBlock), memReadTime(memReadTime), memWriteTime(memWriteTime)
+	unsigned memWriteTime,
+	Utilities* utilities
+	) : bytesPerWord(bytesPerWord), wordsPerBlock(wordsPerBlock), memReadTime(memReadTime), memWriteTime(memWriteTime), utilities(utilities)
 {
 	blockLength = wordsPerBlock*bytesPerWord;
 	memoryCapacity = 1 << addressBits;
@@ -41,6 +42,7 @@ void Memory::read(Byte dataOut[], unsigned address, unsigned loadLength)
 		dataOut += bytesPerBlock;
 		blockNumber++;
 	}
+	utilities -> globalTime += memReadTime;
 
 }
 
@@ -59,6 +61,7 @@ void Memory::write(Byte dataIn[], unsigned address, unsigned storeLength)
 		dataIn += bytesPerBlock;
 		blockNumber++;
 	}
+	utilities -> globalTime += memWriteTime;
 }
 
 void Memory::readWord(Byte dataOut[], unsigned blockNumber)

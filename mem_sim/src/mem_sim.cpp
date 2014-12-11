@@ -6,11 +6,11 @@
 #define WORDSPERBLOCK 4
 #define BLOCKSPERSET 2
 #define SETSPERCACHE 10
-#define HITTIME 0
-#define MEMREADTIME 0
-#define MEMWRITETIME 0
+#define HITTIME 2
+#define MEMREADTIME 3
+#define MEMWRITETIME 4
 
-#define debugBufferSize 5120
+#define DEBUGBUFFERSIZE 20
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -24,6 +24,7 @@
 #include "mem_sim_debugger.h"
 #include "mem_sim_exceptions.h"
 #include "mem_sim_byte.h"
+#include "mem_sim_utilities.h"
 
 int convertToInt(char charIn);
 int convertToInt(std::string stringIn);
@@ -66,13 +67,15 @@ int main(int argc, char *argv[]){
 	}
 
 	//initialisation of required objects
+	Utilities utilities;
 
 	Memory memory(
 		addressBits,
 		bytesPerWord,
 		wordsPerBlock,
 		memReadTime,
-		memWriteTime
+		memWriteTime,
+		&utilities
 		);
 
 	Cache cache(
@@ -81,11 +84,13 @@ int main(int argc, char *argv[]){
 		blocksPerSet,
 		setsPerCache,
 		hitTime,
-		&memory
+		&memory,
+		&utilities
 	);
 
 	Debugger debugger;
 	Parser parser;
+	
 
 	// end of initialisation
 
@@ -94,16 +99,19 @@ int main(int argc, char *argv[]){
 	std::string commandString;
 	std::string command;
 	std::vector<std::string> commandTokens;
-
+	unsigned debugStored = DEBUGBUFFERSIZE;
 	std::stringstream debugStream;
+
 	while (!endOfInput)
 	{
 		getline(std::cin, commandString);
+		utilities.globalHit = true;
+		utilities.globalSetsUsed.str("");
+		utilities.globalTime = 0;
 		try{
-			
-			commandTokens = parser.parse(commandString);
-			if (commandTokens.size() == 0)
+			if (commandString.size() == 0)
 				break;
+			commandTokens = parser.parse(commandString);
 			command = commandTokens[0];
 			debugStream << commandString << std::endl;
 			if (command == "read-req" || command == "READ-REQ")
@@ -111,13 +119,20 @@ int main(int argc, char *argv[]){
 				if (commandTokens.size() != 2)
 					throw invalidInputException(buildInvalidStringStream("read-req", commandTokens.size()-1).c_str());
 
-				std::cout << "read-ack" << std::endl;
+				std::cout << "read-ack ";
 				unsigned address = convertToInt(commandTokens[1]);
 
 				Byte* dataOut = new Byte[2];
 				cache.load(dataOut, address, 1);
 				printByteString(dataOut, 1);
+				std::cout << utilities.globalSetsUsed.str();
+				if (utilities.globalHit)
+					std::cout << "HIT ";
+				else
+					std::cout << "MISS ";
+				std::cout << utilities.globalTime << std::endl;
 				debugger.printCache(debugStream, &cache);
+				debugStored--;
 				delete[] dataOut;
 			}
 			else if (command == "write-req" || command == "WRITE-REQ")
@@ -125,7 +140,7 @@ int main(int argc, char *argv[]){
 				if(commandTokens.size() != 3)
 					throw invalidInputException(buildInvalidStringStream("write-req", commandTokens.size() - 1).c_str());
 
-				std::cout << "write-ack" << std::endl;
+				std::cout << "write-ack ";
 
 				unsigned address = convertToInt(commandTokens[1]);
 				char * writable = new char[2*bytesPerWord + 1];
@@ -138,7 +153,14 @@ int main(int argc, char *argv[]){
 					count += 2;
 				}
 				cache.store(dataIn, address, bytesPerWord);
+				std::cout << utilities.globalSetsUsed.str();
+				if (utilities.globalHit)
+					std::cout << "HIT ";
+				else
+					std::cout << "MISS ";
+				std::cout << utilities.globalTime << " " << commandTokens[2] << std::endl;
 				debugger.printCache(debugStream, &cache);
+				debugStored--;
 				delete[] writable;
 			}
 			else if (command == "flush-req" || command == "FLUSH-REQ")
@@ -146,8 +168,9 @@ int main(int argc, char *argv[]){
 				if (commandTokens.size() != 1)
 					throw invalidInputException(buildInvalidStringStream("flush-req", commandTokens.size() - 1).c_str());
 
-				std::cout << "flush-ack" << std::endl;
+				std::cout << "flush-ack ";
 				cache.flush();
+				std::cout << utilities.globalTime << std::endl;
 				debugger.printCache(debugStream, &cache);
 			}
 			else if (command == "debug-req" || command == "DEBUG-REQ")
@@ -160,8 +183,6 @@ int main(int argc, char *argv[]){
 				std::cout << "debug-ack-end" << std::endl;
 				debugStream.str("");
 			}
-			else
-				endOfInput = true;
 		}
 		catch (invalidInputException e)
 		{
@@ -171,6 +192,8 @@ int main(int argc, char *argv[]){
 		{
 			std::cout << "# " << e.what() << std::endl;
 		}
+		if (debugStored == 0)
+			debugStream.str("");
 		commandString.clear();
 		command.clear();
 	}
@@ -199,7 +222,7 @@ void printByteString(Byte* string, int size)
 {
 	for (int i = 0; i < size; i++)
 		std::cout << std::hex << (unsigned)string[i].data[0] << (unsigned)string[i].data[1];
-	std::cout << std::endl;
+	std::cout << " ";
 }
 
 std::string buildInvalidStringStream(std::string instruction, int inputParameters)

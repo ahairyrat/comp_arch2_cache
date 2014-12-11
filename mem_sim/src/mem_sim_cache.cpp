@@ -26,7 +26,7 @@ Cache::~Cache() {
 	delete[] set;
 }
 
-void Cache::store(char dataIn[], unsigned byteAddress, unsigned numBytes)
+void Cache::store(Byte dataIn[], unsigned byteAddress, unsigned numBytes)
 {
 	unsigned setIndex = (byteAddress/(wordsPerBlock*bytesPerWord))%setsPerCache;
 	unsigned tag = byteAddress / (wordsPerBlock*bytesPerWord);
@@ -45,7 +45,7 @@ void Cache::store(char dataIn[], unsigned byteAddress, unsigned numBytes)
 	}
 }
 
-void Cache::load(char dataOut[], unsigned byteAddress, unsigned numBytes)
+void Cache::load(Byte dataOut[], unsigned byteAddress, unsigned numBytes)
 {
 	unsigned setIndex = (byteAddress / (wordsPerBlock*bytesPerWord)) % setsPerCache;
 	unsigned tag = byteAddress / (wordsPerBlock*bytesPerWord);
@@ -86,7 +86,7 @@ void Cache::storeFromMemory(unsigned byteAddress)
 	unsigned setIndex = (byteAddress / (wordsPerBlock*bytesPerWord)) % setsPerCache;
 	unsigned tag = byteAddress / (wordsPerBlock*bytesPerWord);
 	unsigned offset = byteAddress % (wordsPerBlock*bytesPerWord);
-	char* data = new char[bytesPerWord*wordsPerBlock];
+	Byte* data = new Byte[bytesPerWord*wordsPerBlock];
 	memory->read(data, byteAddress - offset, (bytesPerWord*wordsPerBlock));
 	try{
 		set[setIndex]->storeFromMemory(data, tag, NULL);
@@ -105,7 +105,7 @@ void Cache::loadToMemory(unsigned byteAddress, void* block)
 	unsigned setIndex = (byteAddress / (wordsPerBlock*bytesPerWord)) % setsPerCache;
 	unsigned tag = byteAddress / (wordsPerBlock*bytesPerWord);
 	unsigned offset = byteAddress % (wordsPerBlock*bytesPerWord);
-	char* data = new char[bytesPerWord*wordsPerBlock];
+	Byte* data = new Byte[bytesPerWord*wordsPerBlock];
 	set[setIndex]->loadToMemory(data, block, bytesPerWord*wordsPerBlock);
 	memory->write(data, byteAddress, bytesPerWord*wordsPerBlock);
 }

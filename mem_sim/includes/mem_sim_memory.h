@@ -3,6 +3,7 @@
 #define MEM_SIM_MEMORY_H_
 
 #include <string>
+#include "mem_sim_byte.h"
 
 class Memory{
 	friend class Debugger;
@@ -18,11 +19,11 @@ public:
 
 	//dataIn & dataOut must be at least the size of bytesPerBlock
 	//dataIn & dataOut must be at least the size of 2*bytesPerBlock if multiple blocks are to be read/written
-	void read(char dataOut[], unsigned address, unsigned loadLength);
-	void write(char dataIn[], unsigned address, unsigned storeLength);
+	void read(Byte dataOut[], unsigned address, unsigned loadLength);
+	void write(Byte dataIn[], unsigned address, unsigned storeLength);
 
 private:
-	char** data;
+	Byte** data;
 	unsigned blockLength;
 	unsigned memoryCapacity;
 	unsigned memoryBlockSize;
@@ -32,8 +33,8 @@ private:
 	unsigned memWriteTime;
 	unsigned bytesPerBlock;
 
-	void readWord(char dataOut[], unsigned blockNumber);
-	void writeWord(char dataIn[], unsigned blockNumber);
+	void readWord(Byte dataOut[], unsigned blockNumber);
+	void writeWord(Byte dataIn[], unsigned blockNumber);
 
 	std::string buildOutOfMemoryString(int address, int loadLength);
 };

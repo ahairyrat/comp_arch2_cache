@@ -74,8 +74,10 @@
     <ClInclude Include="includes\mem_sim_counter.h" />
     <ClInclude Include="includes\mem_sim_debugger.h" />
     <ClInclude Include="includes\mem_sim_parser.h" />
+    <ClInclude Include="includes\mem_sim_byte.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\mem_sim_byte.cpp" />
     <ClCompile Include="src\mem_sim_parser.cpp" />
     <ClCompile Include="src\mem_sim_debugger.cpp" />
     <ClCompile Include="src\mem_sim_counter.cpp" />

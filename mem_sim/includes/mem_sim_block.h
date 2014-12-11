@@ -3,6 +3,7 @@
 #define MEM_SIM_BLOCK_H_
 
 #include "mem_sim_word.h"
+#include "mem_sim_byte.h"
 #include "mem_sim_counter.h"
 
 class Block {
@@ -14,10 +15,10 @@ public:
 		);
 	virtual ~Block();
 
-	void update(char dataIn[], unsigned tag);
+	void update(Byte dataIn[], unsigned tag);
 
-	void store(char dataIn[], unsigned byteOffset, int numberOfBytes);
-	void load(char dataOut[], unsigned byteOffset, int numberOfBytes);
+	void store(Byte dataIn[], unsigned byteOffset, int numberOfBytes);
+	void load(Byte dataOut[], unsigned byteOffset, int numberOfBytes);
 
 	void Block::used();
 	void Block::notUsed();

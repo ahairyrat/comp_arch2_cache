@@ -29,7 +29,8 @@ void Debugger::forceWord(Word* word)
 	unsigned count = 0;
 	for (unsigned i = 0; i < word->bytesPerWord; i++)
 	{
-		word->byte[i] = count;
+		word->byte[i].data[0] = count;
+		word->byte[i].data[1] = count;
 		count++;
 		if (count > 9)
 			count = 0;
@@ -40,8 +41,8 @@ void Debugger::forceWord(Word* word, unsigned &count)
 {
 	for (unsigned i = 0; i < word->bytesPerWord; i++)
 	{
-		word->byte[i] = count;
-		count++;
+		word->byte[i] = { count, count + 1 };
+		count += 2;
 		if (count > 9)
 			count = 0;
 	}
@@ -50,7 +51,7 @@ void Debugger::forceWord(Word* word, unsigned &count)
 void Debugger::printWord(std::stringstream& dataOut, Word* word)
 {
 	for (unsigned i = 0; i < word->bytesPerWord; i++)
-		dataOut << std::hex << (unsigned)word->byte[i];
+		dataOut << std::hex << (unsigned)word->byte[i].data[0] << (unsigned)word->byte[i].data[1];
 }
 
 void Debugger::forceBlock(Block* block)
@@ -132,7 +133,7 @@ void Debugger::printMemory(std::stringstream& dataOut, Memory* memory)
 		{
 			if (j%memory->bytesPerWord == 0)
 				dataOut << '|';
-			dataOut << (unsigned)memory->data[i][j];	
+			dataOut << (unsigned)memory->data[i][j].data[0] << (unsigned)memory->data[i][j].data[1];
 		}
 		dataOut << '\n';
 	}

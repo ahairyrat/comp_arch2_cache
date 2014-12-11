@@ -42,6 +42,9 @@
     <ClInclude Include="includes\mem_sim_parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="includes\mem_sim_byte.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\mem_sim.cpp">
@@ -69,6 +72,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\mem_sim_parser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mem_sim_byte.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

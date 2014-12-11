@@ -3,6 +3,7 @@
 #define MEM_SIM_SET_H_
 
 #include "mem_sim_block.h"
+#include "mem_sim_byte.h"
 
 class Set {
 	friend class Debugger;
@@ -14,10 +15,10 @@ public:
 		);
 	virtual ~Set();
 
-	void storeFromCpu(char dataIn[], unsigned tag, unsigned byteOffset, int bytesToStore);
-	void storeFromMemory(char dataIn[], unsigned tag, void* blockRef);
-	void loadToCpu(char dataOut[], unsigned tag, unsigned byteOffset, int bytesToLoad);
-	void loadToMemory(char dataOut[], void* blockRef, int bytesToLoad);
+	void storeFromCpu(Byte dataIn[], unsigned tag, unsigned byteOffset, int bytesToStore);
+	void storeFromMemory(Byte dataIn[], unsigned tag, void* blockRef);
+	void loadToCpu(Byte dataOut[], unsigned tag, unsigned byteOffset, int bytesToLoad);
+	void loadToMemory(Byte dataOut[], void* blockRef, int bytesToLoad);
 	void incrementUnused(Block* usedBlock);
 	void flush();
 	

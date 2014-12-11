@@ -4,6 +4,7 @@
 
 #include "mem_sim_set.h"
 #include "mem_sim_memory.h"
+#include "mem_sim_byte.h"
 
 class Cache {
 	friend class Debugger;
@@ -18,8 +19,8 @@ public:
 		);
 	virtual ~Cache();
 
-	void store(char dataIn[], unsigned byteAddress, unsigned numBytes);
-	void load(char dataOut[], unsigned byteAddress, unsigned numBytes);
+	void store(Byte dataIn[], unsigned byteAddress, unsigned numBytes);
+	void load(Byte dataOut[], unsigned byteAddress, unsigned numBytes);
 
 	void flush();
 

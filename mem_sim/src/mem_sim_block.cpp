@@ -23,7 +23,7 @@ Block::~Block() {
 	delete[] word;
 }
 
-void Block::update(char dataIn[], unsigned tag)
+void Block::update(Byte dataIn[], unsigned tag)
 {
 	this->tag = tag;
 	for (unsigned i = 0; i < wordsPerBlock; i++)
@@ -33,13 +33,13 @@ void Block::update(char dataIn[], unsigned tag)
 	this->valid = true;
 }
 
-void Block::store(char dataIn[], unsigned byteOffset, int numberOfBytes)
+void Block::store(Byte dataIn[], unsigned byteOffset, int numberOfBytes)
 {
 	unsigned bytesLeft = numberOfBytes;
 	unsigned wordNumber = byteOffset / bytesPerWord;
 	unsigned offset = byteOffset % bytesPerWord;
 	unsigned storeLength = bytesPerWord - offset;
-	char* dataInPtr = dataIn;
+	Byte* dataInPtr = dataIn;
 	while (bytesLeft > 0 && wordNumber < wordsPerBlock)
 	{
 		storeLength = calculateLoadLength(bytesLeft, offset);
@@ -56,13 +56,13 @@ void Block::store(char dataIn[], unsigned byteOffset, int numberOfBytes)
 		throw dataSplitException("data is split over multiple blocks", numberOfBytes-bytesLeft);
 }
 
-void Block::load(char dataOut[], unsigned byteOffset, int numberOfBytes)
+void Block::load(Byte dataOut[], unsigned byteOffset, int numberOfBytes)
 {
 	unsigned bytesLeft = numberOfBytes;
 	unsigned wordNumber = byteOffset / bytesPerWord;
 	unsigned offset = byteOffset % bytesPerWord;
 	unsigned loadLength = bytesPerWord - offset;
-	char* dataOutPtr = &dataOut[0];
+	Byte* dataOutPtr = &dataOut[0];
 	while (bytesLeft > 0 && wordNumber < wordsPerBlock)
 	{
 		loadLength = calculateLoadLength(bytesLeft, offset);

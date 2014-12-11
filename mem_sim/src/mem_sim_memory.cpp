@@ -14,13 +14,9 @@ Memory::Memory(
 	memoryCapacity = 1 << addressBits;
 	memoryBlockSize = memoryCapacity / blockLength;
 	bytesPerBlock = bytesPerWord*wordsPerBlock;
-	data = new char*[memoryBlockSize];
+	data = new Byte*[memoryBlockSize];
 	for (unsigned i = 0; i < memoryBlockSize; i++)
-	{
-		data[i] = new char[blockLength];
-		for (unsigned j = 0; j < blockLength; j++)
-			data[i][j] = 0;
-	}
+		data[i] = new Byte[blockLength];
 }
 
 Memory::~Memory()
@@ -30,7 +26,7 @@ Memory::~Memory()
 	delete[] data;
 }
 
-void Memory::read(char dataOut[], unsigned address, unsigned loadLength)
+void Memory::read(Byte dataOut[], unsigned address, unsigned loadLength)
 {
 	if (address + loadLength > memoryCapacity)
 		throw std::out_of_range(buildOutOfMemoryString(address, loadLength));
@@ -48,7 +44,7 @@ void Memory::read(char dataOut[], unsigned address, unsigned loadLength)
 
 }
 
-void Memory::write(char dataIn[], unsigned address, unsigned storeLength)
+void Memory::write(Byte dataIn[], unsigned address, unsigned storeLength)
 {
 	if (address + storeLength > memoryCapacity)
 		throw std::out_of_range(buildOutOfMemoryString(address, storeLength));
@@ -65,13 +61,13 @@ void Memory::write(char dataIn[], unsigned address, unsigned storeLength)
 	}
 }
 
-void Memory::readWord(char dataOut[], unsigned blockNumber)
+void Memory::readWord(Byte dataOut[], unsigned blockNumber)
 {
 	for (unsigned i = 0; i < bytesPerBlock; i++)
 		dataOut[i] = data[blockNumber][i];
 }
 
-void Memory::writeWord(char dataIn[], unsigned blockNumber)
+void Memory::writeWord(Byte dataIn[], unsigned blockNumber)
 {
 	for (unsigned i = 0; i < bytesPerBlock; i++)
 		data[blockNumber][i] = dataIn[i];
@@ -80,7 +76,7 @@ void Memory::writeWord(char dataIn[], unsigned blockNumber)
 std::string Memory::buildOutOfMemoryString(int address, int length)
 {
 	std::stringstream ss;
-	ss << "Error: Trying to access address " << address << " for " << length << " bytes.";
-	ss << "\nMemory is only " << memoryCapacity << " bytes large." << std::endl;
+	ss << "Error: Trying to access address " << address << " for " << length/2 << " bytes.";
+	ss << "\nMemory is only " << memoryCapacity/2 << " bytes large." << std::endl;
 	return ss.str();
 }

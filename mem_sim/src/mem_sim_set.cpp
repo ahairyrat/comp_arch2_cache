@@ -24,7 +24,7 @@ Set::~Set() {
 }
 
 //Normal version
-void Set::storeFromCpu(char dataIn[], unsigned tag, unsigned byteOffset, int bytesToStore)
+void Set::storeFromCpu(Byte dataIn[], unsigned tag, unsigned byteOffset, int bytesToStore)
 {
 	Block* storeBlock = findBlock(tag);
 	if (storeBlock == NULL)
@@ -34,7 +34,7 @@ void Set::storeFromCpu(char dataIn[], unsigned tag, unsigned byteOffset, int byt
 }
 
 //version for access to memory
-void Set::storeFromMemory(char dataIn[], unsigned tag, void* blockRef)
+void Set::storeFromMemory(Byte dataIn[], unsigned tag, void* blockRef)
 {
 	Block* storeBlock;
 	if (blockRef == NULL)
@@ -55,7 +55,7 @@ void Set::storeFromMemory(char dataIn[], unsigned tag, void* blockRef)
 }
 
 //Normal version
-void Set::loadToCpu(char dataOut[], unsigned tag, unsigned byteOffset, int bytesToLoad)
+void Set::loadToCpu(Byte dataOut[], unsigned tag, unsigned byteOffset, int bytesToLoad)
 {
 	Block* loadBlock = findBlock(tag);
 	if (loadBlock == NULL)
@@ -65,7 +65,7 @@ void Set::loadToCpu(char dataOut[], unsigned tag, unsigned byteOffset, int bytes
 }
 
 //version for access to memory
-void Set::loadToMemory(char dataOut[], void* blockRef, int bytesToLoad)
+void Set::loadToMemory(Byte dataOut[], void* blockRef, int bytesToLoad)
 {
 	Block* loadBlock = (Block*)blockRef;
 	loadBlock->load(dataOut, 0, bytesToLoad);

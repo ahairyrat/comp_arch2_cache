@@ -1,4 +1,5 @@
 
+#include <iostream>
 #include <stdexcept>
 #include "mem_sim_block.h"
 #include "mem_sim_exceptions.h"

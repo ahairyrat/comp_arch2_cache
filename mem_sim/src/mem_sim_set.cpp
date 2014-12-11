@@ -1,4 +1,5 @@
 
+#include <iostream>
 #include "mem_sim_set.h"
 #include "mem_sim_exceptions.h"
 
@@ -11,9 +12,9 @@ Set::Set(
 	block = new Block*[blocksPerSet+1];
 	for (unsigned i = 0; i < blocksPerSet; i++)
 		block[i] = new Block(
-		bytesPerWord,
-		wordsPerBlock
-		);
+			bytesPerWord,
+			wordsPerBlock
+			);
 	block[blocksPerSet] = '\0';
 }
 

@@ -1,4 +1,5 @@
 
+#include <iostream>
 #include "mem_sim_cache.h"
 #include "mem_sim_exceptions.h"
 #include "mem_sim_utilities.h"
@@ -15,10 +16,10 @@ Cache::Cache(
 	set = new Set*[setsPerCache+1];
 	for (unsigned i = 0; i < setsPerCache; i++)
 		set[i] = new Set(
-		bytesPerWord,
-		wordsPerBlock,
-		blocksPerSet
-		);
+			bytesPerWord,
+			wordsPerBlock,
+			blocksPerSet
+			);
 	set[setsPerCache] = '\0';
 }
 

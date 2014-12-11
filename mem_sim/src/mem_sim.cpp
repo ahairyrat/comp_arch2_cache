@@ -43,8 +43,9 @@ int main(int argc, char *argv[]){
 
 	//Extracting of input information
 
-	if (argc < 8)
+	if (argc < 9)
 	{
+		std::cout << "#Initialisation values not found. Defaulting ..." << std::endl;
 		addressBits = ADDRESSBITS;
 		bytesPerWord = BYTESPERWORD;
 		wordsPerBlock = WORDSPERBLOCK;
@@ -53,22 +54,25 @@ int main(int argc, char *argv[]){
 		hitTime = HITTIME;
 		memReadTime = MEMREADTIME;
 		memWriteTime = MEMWRITETIME;
+		std::cout << "#Default values loaded" << std::endl;
 	}
 	else
 	{
-		addressBits = *(unsigned*)argv[0];
-		bytesPerWord = *(unsigned*)argv[1];
-		wordsPerBlock = *(unsigned*)argv[2];
-		blocksPerSet = *(unsigned*)argv[3];
-		setsPerCache = *(unsigned*)argv[4];
-		hitTime = *(unsigned*)argv[5];
-		memReadTime = *(unsigned*)argv[6];
-		memWriteTime = *(unsigned*)argv[7];
+		std::cout << "#Initialisation values found. Loading ..." << std::endl;
+		addressBits = convertToInt(*argv[1]);
+		bytesPerWord = convertToInt(*argv[2]);
+		wordsPerBlock = convertToInt(*argv[3]);
+		blocksPerSet = convertToInt(*argv[4]);
+		setsPerCache = convertToInt(*argv[5]);
+		hitTime = convertToInt(*argv[6]);
+		memReadTime = convertToInt(*argv[7]);
+		memWriteTime = convertToInt(*argv[8]);
+		std::cout << "#Initialisation values loaded" << std::endl;
 	}
 
 	//initialisation of required objects
 	Utilities utilities;
-
+	std::cout << "#Initialising memory ..." << std::endl;
 	Memory memory(
 		addressBits,
 		bytesPerWord,
@@ -77,7 +81,8 @@ int main(int argc, char *argv[]){
 		memWriteTime,
 		&utilities
 		);
-
+	std::cout << "#Memory initialised" << std::endl;
+	std::cout << "#Initialising cache" << std::endl;
 	Cache cache(
 		bytesPerWord,
 		wordsPerBlock,
@@ -87,7 +92,7 @@ int main(int argc, char *argv[]){
 		&memory,
 		&utilities
 	);
-
+	std::cout << "#Cache initialised" << std::endl;
 	Debugger debugger;
 	Parser parser;
 	
@@ -101,7 +106,7 @@ int main(int argc, char *argv[]){
 	std::vector<std::string> commandTokens;
 	unsigned debugStored = DEBUGBUFFERSIZE;
 	std::stringstream debugStream;
-
+	std::cout << "#Initialisation complete\n#Beginning command processing" << std::endl;
 	while (!endOfInput)
 	{
 		getline(std::cin, commandString);
@@ -127,9 +132,9 @@ int main(int argc, char *argv[]){
 				printByteString(dataOut, 1);
 				std::cout << utilities.globalSetsUsed.str();
 				if (utilities.globalHit)
-					std::cout << "HIT ";
+					std::cout << "hit ";
 				else
-					std::cout << "MISS ";
+					std::cout << "miss ";
 				std::cout << utilities.globalTime << std::endl;
 				debugger.printCache(debugStream, &cache);
 				debugStored--;
@@ -155,10 +160,10 @@ int main(int argc, char *argv[]){
 				cache.store(dataIn, address, bytesPerWord);
 				std::cout << utilities.globalSetsUsed.str();
 				if (utilities.globalHit)
-					std::cout << "HIT ";
+					std::cout << "hit ";
 				else
-					std::cout << "MISS ";
-				std::cout << utilities.globalTime << " " << commandTokens[2] << std::endl;
+					std::cout << "miss ";
+				std::cout << utilities.globalTime <<  std::endl;
 				debugger.printCache(debugStream, &cache);
 				debugStored--;
 				delete[] writable;
@@ -197,6 +202,7 @@ int main(int argc, char *argv[]){
 		commandString.clear();
 		command.clear();
 	}
+	std::cout << "#Exiting ..." << std::endl;
 }
 
 int convertToInt(char charIn)

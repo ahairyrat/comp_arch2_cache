@@ -186,11 +186,11 @@ int main(int argc, char *argv[]){
 		}
 		catch (invalidInputException e)
 		{
-			std::cout << "# " << e.what() << std::endl;
+			std::cout << "\n# " << e.what() << std::endl;
 		}
 		catch (std::out_of_range e)
 		{
-			std::cout << "# " << e.what() << std::endl;
+			std::cout << "\n# " << e.what() << std::endl;
 		}
 		if (debugStored == 0)
 			debugStream.str("");
@@ -228,7 +228,7 @@ void printByteString(Byte* string, int size)
 std::string buildInvalidStringStream(std::string instruction, int inputParameters)
 {
 	std::stringstream ss;
-	ss << "# Error: " << instruction << " requires ";
+	ss << "Error: " << instruction << " requires ";
 	if (instruction == "read-req")
 		ss << "1";
 	else if (instruction == "write-req")

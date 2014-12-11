@@ -1,28 +1,13 @@
 
 #include "mem_sim_debugger.h"
 
-#define TEST_SUCCESS 1
-#define TEST_FAILURE 0
-
-
 Debugger::Debugger()
 {
 }
 
-
 Debugger::~Debugger()
 {
 }
-
-
-bool Debugger::debug(Cache* cache, Memory* memory)
-{
-	if (cache == NULL && memory == NULL)
-		return TEST_SUCCESS;
-	return TEST_FAILURE;
-}
-
-
 
 void Debugger::forceWord(Word* word)
 {
@@ -31,9 +16,7 @@ void Debugger::forceWord(Word* word)
 	{
 		word->byte[i].data[0] = count;
 		word->byte[i].data[1] = count;
-		count++;
-		if (count > 9)
-			count = 0;
+		count = (count + 1) % 16;
 	}
 }
 
@@ -41,10 +24,9 @@ void Debugger::forceWord(Word* word, unsigned &count)
 {
 	for (unsigned i = 0; i < word->bytesPerWord; i++)
 	{
-		word->byte[i] = { count, count + 1 };
-		count += 2;
-		if (count > 9)
-			count = 0;
+		word->byte[i].data[0] = count;
+		word->byte[i].data[1] = count;
+		count = (count + 1) % 16;
 	}
 }
 
@@ -110,16 +92,12 @@ void Debugger::forceCache(Cache* cache)
 
 void Debugger::printCache(std::stringstream& dataOut, Cache* cache)
 {
-	//rework dash number
-	dataOut << std::hex;
-	unsigned dashNumber = (cache->set[0]->blocksPerSet)*(cache->set[0]->block[0]->wordsPerBlock)*(cache->set[0]->block[0]->word[0]->bytesPerWord);
-	dashNumber += cache->set[0]->blocksPerSet;
-	dashNumber += 7;
+	dataOut << std::hex;	
 	for (unsigned i = 0; i < cache->setsPerCache; i++)
 	{
 		printSet(dataOut, cache->set[i]);
 		dataOut << '\n';
-		for (int j = dashNumber; j > 0; j--)
+		for (int j = 20; j > 0; j--)
 			dataOut << '-';
 		dataOut << '\n';
 	}
@@ -138,4 +116,3 @@ void Debugger::printMemory(std::stringstream& dataOut, Memory* memory)
 		dataOut << '\n';
 	}
 }
-

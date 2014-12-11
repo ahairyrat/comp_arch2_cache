@@ -18,11 +18,6 @@ Byte::~Byte()
 
 }
 
-char* Byte::c_str()
-{
-	return data;
-}
-
 void Byte::setByte(char a, char b)
 {
 	data[0] = a;

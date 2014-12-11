@@ -11,7 +11,6 @@ Word::~Word() {
 	delete[] byte;
 }
 
-// allows for partial word reads
 void Word::store(unsigned offset, unsigned storeLength, Byte dataIn[]){
 	if (offset + storeLength > bytesPerWord)
 		throw std::out_of_range("trying to access invalid memory location");

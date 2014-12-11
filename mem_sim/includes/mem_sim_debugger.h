@@ -15,8 +15,6 @@ public:
 	Debugger();
 	virtual ~Debugger();
 
-	bool debug(Cache* cache, Memory* memory);
-	
 	void forceWord(Word* word);
 	void forceWord(Word* word, unsigned &count);
 	void printWord(std::stringstream& dataOut, Word* word);

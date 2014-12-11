@@ -80,6 +80,6 @@ std::string Memory::buildOutOfMemoryString(int address, int length)
 {
 	std::stringstream ss;
 	ss << "Error: Trying to access address " << address << " for " << length/2 << " bytes.";
-	ss << "\nMemory is only " << memoryCapacity/2 << " bytes large." << std::endl;
+	ss << "\n#Memory is only " << memoryCapacity/2 << " bytes large." << std::endl;
 	return ss.str();
 }

@@ -1,4 +1,3 @@
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //This are default setting for initialisation should no parameters be given
 #define ADDRESSBITS 9
@@ -27,8 +26,8 @@
 #include "mem_sim_byte.h"
 #include "mem_sim_utilities.h"
 
-int convertToInt(char charIn);
-int convertToInt(std::string stringIn);
+int convertToInt(char* charIn, bool hex);
+int convertToInt(std::string stringIn, bool hex);
 void printByteString(Byte* string, int size);
 std::string buildInvalidStringStream(std::string instruction, int inputParameters);
 
@@ -60,14 +59,14 @@ int main(int argc, char *argv[]){
 	else
 	{
 		std::cout << "#Initialisation values found. Loading ..." << std::endl;
-		addressBits = convertToInt(*argv[1]);
-		bytesPerWord = convertToInt(*argv[2]);
-		wordsPerBlock = convertToInt(*argv[3]);
-		blocksPerSet = convertToInt(*argv[4]);
-		setsPerCache = convertToInt(*argv[5]);
-		hitTime = convertToInt(*argv[6]);
-		memReadTime = convertToInt(*argv[7]);
-		memWriteTime = convertToInt(*argv[8]);
+		addressBits = convertToInt(argv[1], false);
+		bytesPerWord = convertToInt(argv[2], false);
+		wordsPerBlock = convertToInt(argv[3], false);
+		blocksPerSet = convertToInt(argv[4], false);
+		setsPerCache = convertToInt(argv[5], false);
+		hitTime = convertToInt(argv[6], false);
+		memReadTime = convertToInt(argv[7], false);
+		memWriteTime = convertToInt(argv[8], false);
 		std::cout << "#Initialisation values loaded" << std::endl;
 	}
 
@@ -92,13 +91,13 @@ int main(int argc, char *argv[]){
 		hitTime,
 		&memory,
 		&utilities
-	);
+		);
 	std::cout << "#Cache initialised" << std::endl;
 	Debugger debugger;
 	Parser parser;
-	
+
 	//All required class constructed
-	
+
 	//Creating various data
 	bool endOfInput = false;
 	std::string commandString;
@@ -107,7 +106,7 @@ int main(int argc, char *argv[]){
 	unsigned debugStored = DEBUGBUFFERSIZE;
 	std::stringstream debugStream;
 	std::cout << "#Initialisation complete\n#Beginning command processing" << std::endl;
-	
+
 	// end of initialisation
 
 	while (!endOfInput)
@@ -125,39 +124,40 @@ int main(int argc, char *argv[]){
 			if (command == "read-req" || command == "READ-REQ")
 			{
 				if (commandTokens.size() != 2)
-					throw invalidInputException(buildInvalidStringStream("read-req", commandTokens.size()-1).c_str());
+					throw invalidInputException(buildInvalidStringStream("read-req", commandTokens.size() - 1).c_str());
 
 				std::cout << "read-ack ";
-				unsigned address = convertToInt(commandTokens[1]);
+				unsigned address = convertToInt(commandTokens[1], false);
 
 				Byte* dataOut = new Byte[2];
 				cache.load(dataOut, address, 1);
-				printByteString(dataOut, 1);
 				std::cout << utilities.globalSetsUsed.str();
 				if (utilities.globalHit)
 					std::cout << "hit ";
 				else
 					std::cout << "miss ";
-				std::cout << utilities.globalTime << std::endl;
+				std::cout << utilities.globalTime << " ";
+				printByteString(dataOut, 1);
+				std::cout << std::endl;
 				debugger.printCache(debugStream, &cache);
 				debugStored--;
 				delete[] dataOut;
 			}
 			else if (command == "write-req" || command == "WRITE-REQ")
 			{
-				if(commandTokens.size() != 3)
+				if (commandTokens.size() != 3)
 					throw invalidInputException(buildInvalidStringStream("write-req", commandTokens.size() - 1).c_str());
 
 				std::cout << "write-ack ";
 
-				unsigned address = convertToInt(commandTokens[1]);
-				char * writable = new char[2*bytesPerWord + 1];
+				unsigned address = convertToInt(commandTokens[1], false);
+				char * writable = new char[2 * bytesPerWord + 1];
 				Byte * dataIn = new Byte[bytesPerWord];
 				strcpy(writable, commandTokens[2].c_str());
 				unsigned count = 0;
 				for (unsigned i = 0; i < bytesPerWord; i++)
 				{
-					dataIn[i].setByte(convertToInt(writable[count]), convertToInt(writable[count+1]));
+					dataIn[i].setByte(convertToInt(&writable[count], true), convertToInt(&writable[count + 1], true));
 					count += 2;
 				}
 				cache.store(dataIn, address, bytesPerWord);
@@ -166,7 +166,7 @@ int main(int argc, char *argv[]){
 					std::cout << "hit ";
 				else
 					std::cout << "miss ";
-				std::cout << utilities.globalTime <<  std::endl;
+				std::cout << utilities.globalTime << std::endl;
 				debugger.printCache(debugStream, &cache);
 				debugStored--;
 				delete[] writable;
@@ -210,23 +210,32 @@ int main(int argc, char *argv[]){
 	std::cout << "#Exiting ..." << std::endl;
 }
 
-int convertToInt(char charIn)
+//Allows only values 0 - f hex as inputs
+int convertToInt(char *charIn, bool hex)
 {
 	int x;
 	std::stringstream ss;
-	ss << std::hex << charIn;
+	for (unsigned i = 0; i < sizeof(charIn) / sizeof(charIn[0]); i++)
+	{
+		if (hex)
+			ss << std::hex << charIn[i];
+		else
+			ss << std::dec << charIn[i];
+	}
 	ss >> x;
 	return x;
 }
 
-int convertToInt(std::string stringIn)
+int convertToInt(std::string stringIn, bool hex)
 {
 	int x;
 	std::stringstream ss;
-	ss << std::dec << stringIn;
+	if (hex)
+		ss << std::hex << stringIn;
+	else
+		ss << std::dec << stringIn;
 	ss >> x;
 	return x;
-
 }
 
 void printByteString(Byte* string, int size)
@@ -246,6 +255,6 @@ std::string buildInvalidStringStream(std::string instruction, int inputParameter
 		ss << "2";
 	else
 		ss << "0";
-	ss << " inputs, " << (inputParameters <= 0 ? 0 : inputParameters)<< " specified";
+	ss << " inputs, " << (inputParameters <= 0 ? 0 : inputParameters) << " specified";
 	return ss.str();
 }
